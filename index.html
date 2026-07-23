@@ -112,8 +112,8 @@ body.spotlight-active .footer {
 }
 
 /* ===== BOTTOM DOCK (IDE TERMINAL & SPOTLIGHT) ===== */
-.bottom-dock{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;transition:all .3s cubic-bezier(0.4,0,0.2,1);width:100%}
-.bottom-dock:focus-within{border-color:hsl(var(--ring)/0.3);box-shadow:0 10px 30px -10px hsl(0 0% 0% / 0.15)}
+.bottom-dock{background:hsl(var(--card)/0.95);backdrop-filter:blur(16px);border:1px solid hsl(var(--border));border-radius:16px;padding:16px 20px;display:flex;flex-direction:column;gap:12px;transition:all .3s cubic-bezier(0.4,0,0.2,1);position:sticky;bottom:16px;z-index:80;box-shadow:0 -4px 25px -5px hsl(0 0% 0% / 0.25);width:100%}
+.bottom-dock:focus-within{border-color:hsl(var(--ring)/0.3);box-shadow:0 10px 30px -10px hsl(0 0% 0% / 0.2)}
 .bottom-dock.dock-minimized{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);width:320px;padding:12px 20px;cursor:pointer;z-index:90;border-color:hsl(var(--border));box-shadow:0 10px 40px -10px hsl(0 0% 0% / 0.2)}
 .bottom-dock.dock-minimized:hover{border-color:hsl(var(--ring)/0.5)}
 .bottom-dock.dock-minimized .dock-layout{display:none}
@@ -122,10 +122,14 @@ body.spotlight-active .footer {
 .dock-fullscreen .dock-content{height:100%;display:flex;flex-direction:column;min-height:0}
 .dock-fullscreen .out-pane.active{height:100%;display:flex;flex-direction:column;min-height:0}
 .dock-fullscreen .raw-edit,.dock-fullscreen .out-box{flex:1;height:100%;min-height:200px;resize:vertical}
-/* ===== ANTIGRAVITY IDE LAYOUT ===== */
-.ide-wrapper{max-width:1680px;margin:0 auto;padding:16px 24px 60px;display:grid;grid-template-columns:310px 1fr 310px;gap:16px;align-items:start}
-@media(max-width:1180px){.ide-wrapper{display:flex;flex-direction:column}}
+
+/* ===== ANTIGRAVITY IDE LAYOUT (1/5 - 3/5 - 1/5 RATIO) ===== */
+.ide-wrapper{width:100%;max-width:100%;padding:16px 20px 60px;display:grid;grid-template-columns:20% 1fr 20%;gap:16px;align-items:start;box-sizing:border-box}
+@media(max-width:1100px){.ide-wrapper{display:flex;flex-direction:column}}
 .ide-col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.ide-col-left{position:sticky;top:72px;max-height:calc(100vh - 100px);overflow-y:auto}
+.ide-col-right{position:sticky;top:72px;max-height:calc(100vh - 100px);overflow-y:auto}
+.ide-col-center{display:flex;flex-direction:column;gap:16px;min-width:0;position:relative}
 .ide-center-top{display:flex;flex-direction:column;gap:16px;flex:1}
 
 /* Icon-Only Dock Buttons */
@@ -248,7 +252,7 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
 .vp-ctrl input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:hsl(var(--foreground));cursor:pointer;border:2px solid hsl(var(--background));box-shadow:0 1px 3px hsl(0 0% 0%/0.2)}
 
 /* ===== FOOTER ===== */
-.footer{padding:20px 24px;border-top:1px solid hsl(var(--border));display:flex;justify-content:space-between;align-items:center;font-size:13px;color:hsl(var(--muted-foreground))}
+.footer{width:100%;padding:18px 24px;border-top:1px solid hsl(var(--border));display:flex;justify-content:space-between;align-items:center;gap:20px;font-size:13px;color:hsl(var(--muted-foreground));background:hsl(var(--card));box-sizing:border-box}
 .footer a{color:hsl(var(--acc));text-decoration:none}.footer a:hover{text-decoration:underline}
 .copy-email{cursor:pointer;padding:4px 10px;border:1px solid hsl(var(--border));border-radius:var(--radius);background:transparent;color:hsl(var(--foreground));font-size:12px;font-family:inherit;font-weight:500;transition:all .15s}
 .copy-email:hover{background:hsl(var(--accent))}
