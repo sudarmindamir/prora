@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Impromt — AI Photography Prompt Builder</title>
+<title>Proras — AI Photography Prompt Builder</title>
 <meta name="description" content="Build optimized photography prompts for ChatGPT, Gemini, and Magnific with reverse engineering auto-fill.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -160,7 +160,7 @@ textarea::placeholder,input::placeholder{color:var(--text-dim)}
 </head>
 <body>
 <header class="header">
-  <div class="logo">Impromt</div>
+  <div class="logo">Proras</div>
   <div class="header-actions">
     <div class="theme-sw" onclick="toggleTheme()" title="Toggle Light/Dark"><div class="dot" id="thDot">🌙</div></div>
     <button class="hdr-btn" onclick="resetAll()">Reset</button>
@@ -470,7 +470,7 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
 </div>
 
 <footer class="footer">
-  <span>Impromt — Photography Prompt Builder</span>
+  <span>Proras — Photography Prompt Builder</span>
   <span>Feedback: <button class="copy-email" onclick="navigator.clipboard.writeText('hello@sudarmindamir.com').then(()=>toast('Email copied ✓'))">hello@sudarmindamir.com</button></span>
 </footer>
 <div class="toast" id="toast"></div>
@@ -752,7 +752,7 @@ function saveTxt(platform){
   if(!platform||platform==='raw')txt=document.getElementById('rawEdit').value;
   else{const el=document.getElementById('out'+platform.charAt(0).toUpperCase()+platform.slice(1));txt=el.dataset.raw||el.textContent}
   const blob=new Blob([txt],{type:'text/plain'});const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);a.download=`impromt-${platform||'raw'}-${ts}.txt`;a.click();URL.revokeObjectURL(a.href);toast('Saved ✓');
+  a.href=URL.createObjectURL(blob);a.download=`proras-${platform||'raw'}-${ts}.txt`;a.click();URL.revokeObjectURL(a.href);toast('Saved ✓');
 }
 
 /* ===== TOAST ===== */
