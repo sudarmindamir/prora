@@ -86,28 +86,41 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:hsl(var(-
 .info-pill{display:flex;align-items:center;gap:8px;flex:1;min-width:200px;background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:10px 14px;font-size:13px;color:hsl(var(--muted-foreground));transition:border-color .15s}
 .info-pill:hover{border-color:hsl(var(--ring)/0.3)}
 
-/* ===== COLLAPSIBLE SECTIONS ===== */
-.collapse-section{margin:0 24px 16px;background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:calc(var(--radius) + 2px);overflow:hidden;transition:border-color .15s}
+/* ===== BENTO LAYOUT ===== */
+.bento-wrapper{max-width:1200px;margin:0 auto;padding:0 24px 40px;display:flex;flex-direction:column;gap:16px}
+.bento-grid{display:grid;grid-template-columns:repeat(12, 1fr);gap:16px;align-items:start}
+@media(max-width:900px){.bento-grid{display:flex;flex-direction:column}}
+.bento-span-12{grid-column:span 12}.bento-span-8{grid-column:span 8}.bento-span-4{grid-column:span 4}
+.bento-card{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:16px;padding:20px;transition:border-color .15s,box-shadow .15s}
+.bento-card:hover{border-color:hsl(var(--ring)/0.2);box-shadow:0 4px 20px hsl(0 0% 0% / 0.05)}
+
+/* ===== COLLAPSIBLE SECTIONS (Bento Mod) ===== */
+.collapse-section{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:16px;overflow:hidden;transition:border-color .15s}
 .collapse-section:hover{border-color:hsl(var(--ring)/0.2)}
-.collapse-hdr{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;font-size:14px;font-weight:600;transition:background .15s;border-radius:calc(var(--radius) + 2px)}
+.collapse-hdr{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;font-size:14px;font-weight:600;transition:background .15s}
 .collapse-hdr:hover{background:hsl(var(--accent))}
 .collapse-body{padding:0 16px 16px;display:none}.collapse-body.open{display:block}
 .collapse-arrow{transition:transform .2s cubic-bezier(0.4,0,0.2,1);font-size:14px;color:hsl(var(--muted-foreground))}.collapse-arrow.open{transform:rotate(180deg)}
 
-/* ===== MAIN GRID ===== */
-.main-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:0 24px 24px;align-items:start}
-@media(max-width:1300px){.main-grid{grid-template-columns:1fr}}
-.side-col{min-width:0}
-.side-col .col-hdr{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:hsl(var(--muted-foreground));margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid hsl(var(--border));display:flex;justify-content:space-between;align-items:center;font-weight:600}
-
 /* ===== BOTTOM DOCK ===== */
-.bottom-dock{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);width:calc(100% - 48px);max-width:1200px;background:hsl(var(--card)/0.85);backdrop-filter:blur(16px);border:1px solid hsl(var(--border));border-radius:16px;padding:20px;z-index:90;box-shadow:0 10px 40px -10px hsl(0 0% 0% / 0.15),0 0 0 1px hsl(var(--border)/0.5);display:flex;flex-direction:column;gap:12px;transition:all .3s}
+/* ===== BOTTOM DOCK ===== */
+.bottom-dock{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);width:calc(100% - 48px);max-width:1200px;background:hsl(var(--card)/0.85);backdrop-filter:blur(16px);border:1px solid hsl(var(--border));border-radius:16px;padding:20px;z-index:90;box-shadow:0 10px 40px -10px hsl(0 0% 0% / 0.15),0 0 0 1px hsl(var(--border)/0.5);display:flex;flex-direction:column;gap:12px;transition:all .3s cubic-bezier(0.4,0,0.2,1)}
 .bottom-dock:focus-within{background:hsl(var(--card));border-color:hsl(var(--ring)/0.3);box-shadow:0 15px 50px -10px hsl(0 0% 0% / 0.25)}
+.bottom-dock.dock-minimized{bottom:16px;width:300px;padding:12px 20px;cursor:pointer;border-color:hsl(var(--border));background:hsl(var(--card))}
+.bottom-dock.dock-minimized:hover{border-color:hsl(var(--ring)/0.5)}
+.bottom-dock.dock-minimized .dock-layout{display:none}
+.bottom-dock.dock-fullscreen{bottom:0;left:0;top:0;width:100%;max-width:100%;transform:none;border-radius:0;border:none;background:hsl(var(--background));z-index:999;padding:32px;overflow-y:auto}
+.dock-btn{background:transparent;border:none;color:hsl(var(--muted-foreground));font-size:14px;cursor:pointer;padding:4px 8px;border-radius:var(--radius);transition:all .15s}
+.dock-btn:hover{background:hsl(var(--accent));color:hsl(var(--foreground))}
+.dock-min-preview{display:none;font-size:12px;color:hsl(var(--muted-foreground));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.dock-minimized .dock-min-preview{display:block}
 
 /* ===== BLOCKS / CARDS ===== */
-.blk{margin-bottom:12px;padding:16px;background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:calc(var(--radius) + 2px);transition:border-color .15s,box-shadow .15s}
-.blk:hover{border-color:hsl(var(--ring)/0.2);box-shadow:0 1px 3px hsl(0 0% 0% / 0.06)}
-.blk-pfx{border-left:3px solid hsl(var(--pfx))}.blk-scn{border-left:3px solid hsl(var(--scn))}.blk-sfx{border-left:3px solid hsl(var(--sfx))}
+/* ===== BLOCKS / CARDS ===== */
+.blk{margin-bottom:12px;transition:border-color .15s,box-shadow .15s}
+.blk-pfx{border-left:3px solid hsl(var(--pfx));padding-left:12px}
+.blk-scn{border-left:3px solid hsl(var(--scn));padding-left:12px}
+.blk-sfx{border-left:3px solid hsl(var(--sfx));padding-left:12px}
 .blk-hdr{font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .lock-btn{width:24px;height:24px;border:1px solid hsl(var(--border));border-radius:calc(var(--radius) - 2px);background:transparent;color:hsl(var(--muted-foreground));font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:auto;flex-shrink:0;transition:all .15s}
 .lock-btn:hover{background:hsl(var(--accent));color:hsl(var(--accent-foreground))}
@@ -134,12 +147,12 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
 .tog-btn.active{background:hsl(var(--foreground));color:hsl(var(--background));font-weight:600}.tog-btn:hover:not(.active){background:hsl(var(--accent))}
 
 /* ===== SCENE AREA ===== */
-.scene-area{margin:0 24px 16px;background:hsl(var(--card));border:1px solid hsl(var(--scn-bd));border-radius:calc(var(--radius) + 2px);padding:20px;transition:border-color .15s}
+.scene-area{transition:border-color .15s}
 .scene-area .hdr{font-size:15px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px;letter-spacing:-0.3px}
 .scene-area .sub{font-size:12px;color:hsl(var(--muted-foreground));margin-bottom:16px}
 .scene-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
-.sg{background:hsl(var(--background));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:14px;transition:border-color .15s}
-.sg:hover{border-color:hsl(var(--ring)/0.2)}
+.sg{background:hsl(var(--muted)/0.3);border:1px solid hsl(var(--border));border-radius:var(--radius);padding:14px;transition:border-color .15s}
+.sg:hover{border-color:hsl(var(--ring)/0.2);background:hsl(var(--card))}
 .sg-title{font-size:11px;font-weight:600;color:hsl(var(--scn));text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid hsl(var(--scn-bd))}
 
 /* ===== TEMPLATE SECTION ===== */
@@ -172,9 +185,10 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
 .out-tabs{display:flex;flex-direction:column;gap:4px;border-radius:var(--radius)}
 .out-tab{padding:10px 12px;border:none;background:transparent;color:hsl(var(--muted-foreground));font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;text-align:left;border-radius:var(--radius);transition:all .15s}
 .out-tab.active{background:hsl(var(--foreground));color:hsl(var(--background));font-weight:600}.out-tab:hover:not(.active){background:hsl(var(--accent))}
-.out-pane{display:none}.out-pane.active{display:block;flex:1}
-.out-box{font-size:13px;line-height:1.7;padding:16px;background:hsl(var(--prompt-bg));border-radius:var(--radius);border:1px solid hsl(var(--border));overflow-y:auto;height:200px}
-.raw-edit{width:100%;height:200px;padding:16px;background:hsl(var(--prompt-bg));border:1px solid hsl(var(--border));border-radius:var(--radius);color:hsl(var(--foreground));font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;resize:none;white-space:pre-wrap;overflow-y:auto;outline:none;transition:border-color .15s,box-shadow .15s}
+.out-pane{display:none}.out-pane.active{display:flex;flex-direction:column;flex:1;min-height:0}
+.out-box{font-size:13px;line-height:1.7;padding:16px;background:hsl(var(--prompt-bg));border-radius:var(--radius);border:1px solid hsl(var(--border));overflow-y:auto;height:200px;flex:1}
+.raw-edit{width:100%;height:200px;min-height:100px;flex:1;padding:16px;background:hsl(var(--prompt-bg));border:1px solid hsl(var(--border));border-radius:var(--radius);color:hsl(var(--foreground));font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;resize:vertical;white-space:pre-wrap;overflow-y:auto;outline:none;transition:border-color .15s,box-shadow .15s}
+.dock-fullscreen .raw-edit, .dock-fullscreen .out-box{height:auto;flex:1}
 .raw-edit:focus{border-color:hsl(var(--ring));box-shadow:0 0 0 2px hsl(var(--ring)/0.2);background:hsl(var(--background))}
 .plat-lbl{font-size:12px;font-weight:600;color:hsl(var(--muted-foreground));margin-bottom:6px}
 .plat-desc{font-size:12px;color:hsl(var(--muted-foreground)/0.7);margin-bottom:10px}
@@ -237,14 +251,16 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
   </div>
 </header>
 
-<div class="top-bar">
-  <div class="info-pill"><span class="badge badge-pfx">Prefix</span> Style, format, photographic opener</div>
-  <div class="info-pill"><span class="badge badge-scn">Scene</span> Subject, action, setting, mood</div>
-  <div class="info-pill"><span class="badge badge-sfx">Suffix</span> Technical parameters, finishing</div>
+<div class="bento-wrapper">
+
+<div class="top-bar" style="margin:0;display:flex;justify-content:center;margin-bottom:8px">
+  <div class="info-pill" style="flex:none"><span class="badge badge-pfx">Prefix</span> Style, format, photographic opener</div>
+  <div class="info-pill" style="flex:none"><span class="badge badge-scn">Scene</span> Subject, action, setting, mood</div>
+  <div class="info-pill" style="flex:none"><span class="badge badge-sfx">Suffix</span> Technical parameters, finishing</div>
 </div>
 
 <!-- BRAND -->
-<div class="collapse-section" style="border-color:hsl(var(--acc))">
+<div class="bento-card bento-span-12 collapse-section" style="border-color:hsl(var(--acc))">
   <div class="collapse-hdr" onclick="togCol(this)"><span>🏢 Brand Industry & Usage Context</span><span class="collapse-arrow">▼</span></div>
   <div class="collapse-body open">
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
@@ -256,7 +272,7 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
 </div>
 
 <!-- REVERSE ENGINEERING -->
-<div class="collapse-section" style="border-color:hsl(var(--acc)/0.2)">
+<div class="bento-card bento-span-12 collapse-section" style="border-color:hsl(var(--acc)/0.2)">
   <div class="collapse-hdr" onclick="togCol(this)"><span>🔬 Reverse Engineering — Auto-Fill from Image Analysis</span><span class="collapse-arrow">▼</span></div>
   <div class="collapse-body" id="reBody">
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
@@ -344,13 +360,27 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
 </div>
 
 <!-- TEMPLATES -->
-<div class="tpl-section">
+<div class="bento-card bento-span-12 tpl-section" style="margin:0">
   <div class="tpl-title">Art Direction Templates — Click to Apply</div>
   <div class="tpl-grid" id="tplGrid"></div>
 </div>
 
-<!-- SCENE DESCRIPTION -->
-<div class="scene-area">
+<div class="bento-grid">
+
+  <!-- LEFT: PREFIX -->
+  <div class="bento-card bento-span-4 side-col">
+    <div class="col-hdr"><span>Prefix Builder</span><span class="badge badge-pfx">Prefix</span></div>
+    <div class="blk blk-pfx">
+      <div class="blk-hdr">Photography Style <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
+      <div class="fld"><label class="fld-lbl">Genre</label><select id="pfxGenre" onchange="hc(this,'pfxGenreC')"><option value="">— skip —</option><option value="editorial portrait" selected>Editorial portrait</option><option value="corporate headshot">Corporate headshot</option><option value="environmental portrait">Environmental</option><option value="street documentary">Street documentary</option><option value="fashion editorial">Fashion editorial</option><option value="cyberpunk neon portrait">Cyberpunk neon</option><option value="high streetwear photography">High streetwear</option><option value="cinematic film still">Cinematic film</option><option value="film noir high contrast">Film noir</option><option value="beauty close-up">Beauty CU</option><option value="conceptual">Conceptual</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxGenreC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Camera</label><select id="pfxCam" onchange="hc(this,'pfxCamC')"><option value="">— skip —</option><option value="full frame DSLR photorealistic" selected>Full frame DSLR</option><option value="medium format high fidelity">Medium format</option><option value="35mm film analog grain">35mm film</option><option value="cinematic anamorphic">Anamorphic</option><option value="Hasselblad">Hasselblad</option><option value="Leica rangefinder">Leica</option><option value="RED 8K">RED 8K</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxCamC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Art Direction</label><select id="pfxArt" onchange="hc(this,'pfxArtC')"><option value="">— skip —</option><option value="quiet confidence understated luxury">Quiet confidence</option><option value="bold graphic high impact editorial" selected>Bold editorial</option><option value="warm human approachable">Warm approachable</option><option value="minimal precise engineered">Minimal precise</option><option value="raw documentary honesty">Raw documentary</option><option value="dark moody cinematic">Dark cinematic</option><option value="cyberpunk neon futurism">Cyberpunk neon</option><option value="high streetwear editorial">High streetwear</option><option value="Wes Anderson pastel symmetry">Wes Anderson</option><option value="Wong Kar-wai neon melancholy">Wong Kar-wai</option><option value="Blade Runner dystopian">Blade Runner</option><option value="film noir dramatic">Film noir</option><option value="vintage retro nostalgic">Vintage retro</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxArtC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Prefix Extra</label><textarea id="pfxExtra" placeholder="Extra style notes..." oninput="gen()"></textarea></div>
+    </div>
+  </div>
+
+<!-- CENTER: SCENE DESCRIPTION -->
+<div class="bento-card bento-span-4 scene-area" style="margin:0;grid-column:span 4">
   <div class="hdr">🎬 Scene Description <span class="badge badge-scn">Primary Editor</span></div>
   <div class="sub">Core of the prompt — each section is a separate detail column. Change freely while Prefix & Suffix stay locked.</div>
   <div class="scene-grid">
@@ -410,7 +440,7 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
 </div>
 
 <!-- PUPPET VIEWPORT -->
-<div class="viewport-container">
+<div class="bento-card bento-span-12 viewport-container" style="margin:0">
   <div class="viewport-header" onclick="togCol(this)"><span style="font-size:14px;font-weight:600">📐 Puppet Rigging & Camera — Drag Joints to Pose</span><span class="collapse-arrow">▼</span></div>
   <div class="viewport-body" id="vpBody">
     <div style="font-size:11px;color:hsl(var(--muted-foreground));margin-bottom:12px">🖱️ Click & drag yellow joints. Use presets or camera sliders. Click Accept to apply.</div>
@@ -442,32 +472,19 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
   </div>
 </div>
 
+  </div>
+</div>
+
 <!-- CONFLICT WARNINGS -->
-<div class="conflict-warn" id="conflictArea">
+<div class="bento-span-12 conflict-warn" id="conflictArea">
   <div class="conflict-box">
     <div style="font-size:10px;font-weight:700;color:hsl(var(--warn));margin-bottom:6px">⚠️ Potential Prompt Conflicts — fix in RAW Edit or adjust variables</div>
     <div id="conflictList"></div>
   </div>
 </div>
 
-<!-- MAIN GRID -->
-<div class="main-grid">
-  <!-- LEFT: PREFIX -->
-  <div class="side-col">
-    <div class="col-hdr"><span>Prefix Builder</span><span class="badge badge-pfx">Prefix</span></div>
-    <div class="blk blk-pfx">
-      <div class="blk-hdr">Photography Style <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
-      <div class="fld"><label class="fld-lbl">Genre</label><select id="pfxGenre" onchange="hc(this,'pfxGenreC')"><option value="">— skip —</option><option value="editorial portrait" selected>Editorial portrait</option><option value="corporate headshot">Corporate headshot</option><option value="environmental portrait">Environmental</option><option value="street documentary">Street documentary</option><option value="fashion editorial">Fashion editorial</option><option value="cyberpunk neon portrait">Cyberpunk neon</option><option value="high streetwear photography">High streetwear</option><option value="cinematic film still">Cinematic film</option><option value="film noir high contrast">Film noir</option><option value="beauty close-up">Beauty CU</option><option value="conceptual">Conceptual</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxGenreC"><input type="text" oninput="gen()"></div></div>
-      <div class="fld"><label class="fld-lbl">Camera</label><select id="pfxCam" onchange="hc(this,'pfxCamC')"><option value="">— skip —</option><option value="full frame DSLR photorealistic" selected>Full frame DSLR</option><option value="medium format high fidelity">Medium format</option><option value="35mm film analog grain">35mm film</option><option value="cinematic anamorphic">Anamorphic</option><option value="Hasselblad">Hasselblad</option><option value="Leica rangefinder">Leica</option><option value="RED 8K">RED 8K</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxCamC"><input type="text" oninput="gen()"></div></div>
-      <div class="fld"><label class="fld-lbl">Art Direction</label><select id="pfxArt" onchange="hc(this,'pfxArtC')"><option value="">— skip —</option><option value="quiet confidence understated luxury">Quiet confidence</option><option value="bold graphic high impact editorial" selected>Bold editorial</option><option value="warm human approachable">Warm approachable</option><option value="minimal precise engineered">Minimal precise</option><option value="raw documentary honesty">Raw documentary</option><option value="dark moody cinematic">Dark cinematic</option><option value="cyberpunk neon futurism">Cyberpunk neon</option><option value="high streetwear editorial">High streetwear</option><option value="Wes Anderson pastel symmetry">Wes Anderson</option><option value="Wong Kar-wai neon melancholy">Wong Kar-wai</option><option value="Blade Runner dystopian">Blade Runner</option><option value="film noir dramatic">Film noir</option><option value="vintage retro nostalgic">Vintage retro</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxArtC"><input type="text" oninput="gen()"></div></div>
-      <div class="fld"><label class="fld-lbl">Prefix Extra</label><textarea id="pfxExtra" placeholder="Extra style notes..." oninput="gen()"></textarea></div>
-    </div>
-  </div>
-
-
-
   <!-- RIGHT: SUFFIX -->
-  <div class="side-col">
+  <div class="bento-card bento-span-4 side-col">
     <div class="col-hdr"><span>Light, Camera & Post</span><span class="badge badge-sfx">Suffix</span></div>
     <!-- Colors (hex only - no text color names to avoid conflict) -->
     <div class="blk blk-sfx">
@@ -505,7 +522,9 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
       <div class="fld"><label class="fld-lbl">Suffix Extra</label><textarea id="sfxExtra" placeholder="Notes..." oninput="gen()"></textarea></div>
     </div>
   </div>
-</div>
+
+</div><!-- /bento-grid -->
+</div><!-- /bento-wrapper -->
 
 <footer class="footer">
   <span>Proras — Photography Prompt Builder</span>
@@ -513,10 +532,15 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
 </footer>
 <div class="toast" id="toast"></div>
 
-<div class="bottom-dock">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+<div class="bottom-dock" id="bottomDock">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px" onclick="if(document.getElementById('bottomDock').classList.contains('dock-minimized')) toggleDockMin()">
     <span style="color:hsl(var(--foreground));font-weight:700;font-size:15px;letter-spacing:-0.3px">⚡ FINAL PROMPT OUTPUT</span>
+    <div style="display:flex;gap:4px" onclick="event.stopPropagation()">
+      <button class="dock-btn" onclick="toggleDockMin()" title="Minimize">_</button>
+      <button class="dock-btn" onclick="toggleDockFull()" title="Fullscreen">⛶</button>
+    </div>
   </div>
+  <div class="dock-min-preview" id="dockMinPreview">Your prompt is ready. Click to expand.</div>
   <div class="dock-layout">
     <div class="dock-sidebar">
       <div class="out-tabs">
@@ -792,7 +816,8 @@ function gen(){
   if(v('guardrails'))lines.push('Guardrails: '+v('guardrails'));
   if(v('aspectRatio'))lines.push('Aspect Ratio: '+v('aspectRatio'));
   const sx=document.getElementById('sfxExtra').value.trim();if(sx)lines.push('Suffix Extra: '+sx);
-  const raw=lines.join('\n');document.getElementById('rawEdit').value=raw;
+  const raw=lines.join('\n');const rawEl=document.getElementById('rawEdit');rawEl.value=raw;
+  rawStr=raw; 
   buildOut(raw);checkConflicts();
 }
 
@@ -840,7 +865,38 @@ function saveTxt(platform){
 }
 
 /* ===== TOAST ===== */
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
+function showToast(msg, ok=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.background=ok?'hsl(var(--ok))':'hsl(var(--foreground))';
+  t.classList.add('show');
+  clearTimeout(t.to);
+  t.to=setTimeout(()=>t.classList.remove('show'),3000);
+}
+function toast(m){showToast(m)}
+
+// Dock Controls
+function toggleDockMin() {
+  const dock = document.getElementById('bottomDock');
+  dock.classList.toggle('dock-minimized');
+  if (dock.classList.contains('dock-minimized')) {
+    dock.classList.remove('dock-fullscreen');
+    document.getElementById('dockMinPreview').textContent = document.getElementById('rawEdit').value.substring(0, 100) + '...';
+  }
+}
+function toggleDockFull() {
+  const dock = document.getElementById('bottomDock');
+  dock.classList.toggle('dock-fullscreen');
+  if (dock.classList.contains('dock-fullscreen')) {
+    dock.classList.remove('dock-minimized');
+  }
+}
+function ensureDockVisible() {
+  const dock = document.getElementById('bottomDock');
+  if (dock.classList.contains('dock-minimized')) {
+    dock.classList.remove('dock-minimized');
+  }
+}
 
 /* ===== RESET ===== */
 function resetAll(){
