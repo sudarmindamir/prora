@@ -60,7 +60,7 @@
 
 /* ===== RESET & BASE ===== */
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:hsl(var(--background));color:hsl(var(--foreground));line-height:1.6;min-height:100vh;transition:background .3s,color .3s;font-size:14px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:hsl(var(--background));color:hsl(var(--foreground));line-height:1.6;min-height:100vh;padding-bottom:340px;transition:background .3s,color .3s;font-size:14px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:hsl(var(--border));border-radius:99px}::-webkit-scrollbar-thumb:hover{background:hsl(var(--muted-foreground)/0.4)}
 
 /* ===== HEADER ===== */
@@ -95,12 +95,14 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:hsl(var(-
 .collapse-arrow{transition:transform .2s cubic-bezier(0.4,0,0.2,1);font-size:14px;color:hsl(var(--muted-foreground))}.collapse-arrow.open{transform:rotate(180deg)}
 
 /* ===== MAIN GRID ===== */
-.main-grid{display:grid;grid-template-columns:3fr 8fr 3fr;gap:20px;padding:0 24px 24px;align-items:start}
+.main-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:0 24px 24px;align-items:start}
 @media(max-width:1300px){.main-grid{grid-template-columns:1fr}}
 .side-col{min-width:0}
 .side-col .col-hdr{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:hsl(var(--muted-foreground));margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid hsl(var(--border));display:flex;justify-content:space-between;align-items:center;font-weight:600}
-.center-col{min-width:0}
-.center-panel{background:hsl(var(--center-bg));border:1px solid hsl(var(--center-border)/0.5);border-radius:calc(var(--radius) + 4px);padding:20px;position:sticky;top:72px;max-height:calc(100vh - 88px);overflow-y:auto;box-shadow:0 0 50px hsl(var(--acc)/0.04),0 1px 3px hsl(0 0% 0% / 0.1)}
+
+/* ===== BOTTOM DOCK ===== */
+.bottom-dock{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);width:calc(100% - 48px);max-width:1200px;background:hsl(var(--card)/0.85);backdrop-filter:blur(16px);border:1px solid hsl(var(--border));border-radius:16px;padding:20px;z-index:90;box-shadow:0 10px 40px -10px hsl(0 0% 0% / 0.15),0 0 0 1px hsl(var(--border)/0.5);display:flex;flex-direction:column;gap:12px;transition:all .3s}
+.bottom-dock:focus-within{background:hsl(var(--card));border-color:hsl(var(--ring)/0.3);box-shadow:0 15px 50px -10px hsl(0 0% 0% / 0.25)}
 
 /* ===== BLOCKS / CARDS ===== */
 .blk{margin-bottom:12px;padding:16px;background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:calc(var(--radius) + 2px);transition:border-color .15s,box-shadow .15s}
@@ -163,14 +165,17 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
 .hex-inp:focus{border-color:hsl(var(--ring));box-shadow:0 0 0 2px hsl(var(--ring)/0.2)}
 .tog-use{display:flex;align-items:center;gap:4px;font-size:11px;color:hsl(var(--muted-foreground));font-weight:500}
 
-/* ===== OUTPUT TABS ===== */
-.out-tabs{display:flex;gap:0;margin-bottom:12px;border-radius:var(--radius);overflow:hidden;border:1px solid hsl(var(--center-border)/0.5);background:hsl(var(--muted))}
-.out-tab{flex:1;padding:9px 6px;border:none;background:transparent;color:hsl(var(--muted-foreground));font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;text-align:center;transition:all .15s}
-.out-tab.active{background:hsl(var(--foreground));color:hsl(var(--background))}.out-tab:hover:not(.active){background:hsl(var(--accent))}
-.out-pane{display:none}.out-pane.active{display:block}
-.out-box{font-size:13px;line-height:1.7;padding:14px;background:hsl(var(--prompt-bg));border-radius:var(--radius);margin-bottom:10px;border:1px solid hsl(var(--border));overflow-y:auto}
-.raw-edit{width:100%;min-height:280px;padding:14px;background:hsl(var(--prompt-bg));border:1px solid hsl(var(--center-border)/0.5);border-radius:var(--radius);color:hsl(var(--foreground));font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.75;resize:vertical;white-space:pre;overflow-x:auto;outline:none;transition:border-color .15s,box-shadow .15s}
-.raw-edit:focus{border-color:hsl(var(--ring));box-shadow:0 0 0 2px hsl(var(--ring)/0.2)}
+/* ===== OUTPUT TABS & DOCK ELEMENTS ===== */
+.dock-layout{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:start}
+@media(max-width:768px){.dock-layout{grid-template-columns:1fr;gap:12px}}
+.dock-sidebar{display:flex;flex-direction:column;gap:10px}
+.out-tabs{display:flex;flex-direction:column;gap:4px;border-radius:var(--radius)}
+.out-tab{padding:10px 12px;border:none;background:transparent;color:hsl(var(--muted-foreground));font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;text-align:left;border-radius:var(--radius);transition:all .15s}
+.out-tab.active{background:hsl(var(--foreground));color:hsl(var(--background));font-weight:600}.out-tab:hover:not(.active){background:hsl(var(--accent))}
+.out-pane{display:none}.out-pane.active{display:block;flex:1}
+.out-box{font-size:13px;line-height:1.7;padding:16px;background:hsl(var(--prompt-bg));border-radius:var(--radius);border:1px solid hsl(var(--border));overflow-y:auto;height:200px}
+.raw-edit{width:100%;height:200px;padding:16px;background:hsl(var(--prompt-bg));border:1px solid hsl(var(--border));border-radius:var(--radius);color:hsl(var(--foreground));font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;resize:none;white-space:pre-wrap;overflow-y:auto;outline:none;transition:border-color .15s,box-shadow .15s}
+.raw-edit:focus{border-color:hsl(var(--ring));box-shadow:0 0 0 2px hsl(var(--ring)/0.2);background:hsl(var(--background))}
 .plat-lbl{font-size:12px;font-weight:600;color:hsl(var(--muted-foreground));margin-bottom:6px}
 .plat-desc{font-size:12px;color:hsl(var(--muted-foreground)/0.7);margin-bottom:10px}
 
@@ -459,39 +464,7 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
     </div>
   </div>
 
-  <!-- CENTER: OUTPUT -->
-  <div class="center-col">
-    <div class="col-hdr" style="border-bottom-color:hsl(var(--center-border))"><span style="color:hsl(var(--foreground));font-weight:600;font-size:11px">⚡ FINAL PROMPT OUTPUT</span></div>
-    <div class="center-panel">
-      <div class="out-tabs">
-        <button class="out-tab active" data-t="raw" onclick="swTab('raw')">RAW Edit</button>
-        <button class="out-tab" data-t="chatgpt" onclick="swTab('chatgpt')">ChatGPT</button>
-        <button class="out-tab" data-t="gemini" onclick="swTab('gemini')">Gemini</button>
-        <button class="out-tab" data-t="magnific" onclick="swTab('magnific')">Magnific</button>
-      </div>
-      <div class="out-pane active" data-t="raw">
-        <div class="plat-lbl">📝 RAW Preview — edit any line to sync back to form fields & outputs</div>
-        <textarea class="raw-edit" id="rawEdit" oninput="onRawEdit()"></textarea>
-        <div style="font-size:8px;color:hsl(var(--muted-foreground));margin:4px 0">Format: "Label: value" per line. Changes sync bidirectionally.</div>
-        <div class="btn-row"><button class="btn-pri" onclick="copyOut('raw')">Copy RAW</button><button class="btn-sec" onclick="gen()">Regenerate</button><button class="btn-save" onclick="saveTxt()">💾 Save .txt</button></div>
-      </div>
-      <div class="out-pane" data-t="chatgpt">
-        <div class="plat-lbl">🟢 ChatGPT</div><div class="plat-desc">Structured, explicit negatives.</div>
-        <div class="out-box" id="outChatgpt"></div>
-        <div class="btn-row"><button class="btn-pri" onclick="copyOut('chatgpt')">Copy</button><button class="btn-save" onclick="saveTxt('chatgpt')">💾 Save</button></div>
-      </div>
-      <div class="out-pane" data-t="gemini">
-        <div class="plat-lbl">🔵 Gemini</div><div class="plat-desc">Concise, comma-separated.</div>
-        <div class="out-box" id="outGemini"></div>
-        <div class="btn-row"><button class="btn-pri" onclick="copyOut('gemini')">Copy</button><button class="btn-save" onclick="saveTxt('gemini')">💾 Save</button></div>
-      </div>
-      <div class="out-pane" data-t="magnific">
-        <div class="plat-lbl">🟣 Magnific</div><div class="plat-desc">Quality & texture emphasis.</div>
-        <div class="out-box" id="outMagnific"></div>
-        <div class="btn-row"><button class="btn-pri" onclick="copyOut('magnific')">Copy</button><button class="btn-save" onclick="saveTxt('magnific')">💾 Save</button></div>
-      </div>
-    </div>
-  </div>
+
 
   <!-- RIGHT: SUFFIX -->
   <div class="side-col">
@@ -540,6 +513,52 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
 </footer>
 <div class="toast" id="toast"></div>
 
+<div class="bottom-dock">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+    <span style="color:hsl(var(--foreground));font-weight:700;font-size:15px;letter-spacing:-0.3px">⚡ FINAL PROMPT OUTPUT</span>
+  </div>
+  <div class="dock-layout">
+    <div class="dock-sidebar">
+      <div class="out-tabs">
+        <button class="out-tab active" data-t="raw" onclick="swTab('raw')">RAW Edit</button>
+        <button class="out-tab" data-t="chatgpt" onclick="swTab('chatgpt')">ChatGPT</button>
+        <button class="out-tab" data-t="gemini" onclick="swTab('gemini')">Gemini</button>
+        <button class="out-tab" data-t="magnific" onclick="swTab('magnific')">Magnific</button>
+      </div>
+      <button class="btn-sec" onclick="gen()" style="margin-top:auto">Regenerate</button>
+    </div>
+    <div class="dock-content">
+      <div class="out-pane active" data-t="raw">
+        <textarea class="raw-edit" id="rawEdit" oninput="onRawEdit()"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+          <div style="font-size:11px;color:hsl(var(--muted-foreground))">Edit any line to sync back to form fields.</div>
+          <div class="btn-row" style="margin-top:0"><button class="btn-pri" onclick="copyOut('raw')">Copy RAW</button><button class="btn-save" onclick="saveTxt()">💾 Save .txt</button></div>
+        </div>
+      </div>
+      <div class="out-pane" data-t="chatgpt">
+        <div class="out-box" id="outChatgpt"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+          <div style="font-size:11px;color:hsl(var(--muted-foreground))">Structured, explicit negatives.</div>
+          <div class="btn-row" style="margin-top:0"><button class="btn-pri" onclick="copyOut('chatgpt')">Copy Prompt</button><button class="btn-save" onclick="saveTxt('chatgpt')">💾 Save .txt</button></div>
+        </div>
+      </div>
+      <div class="out-pane" data-t="gemini">
+        <div class="out-box" id="outGemini"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+          <div style="font-size:11px;color:hsl(var(--muted-foreground))">Concise, comma-separated.</div>
+          <div class="btn-row" style="margin-top:0"><button class="btn-pri" onclick="copyOut('gemini')">Copy Prompt</button><button class="btn-save" onclick="saveTxt('gemini')">💾 Save .txt</button></div>
+        </div>
+      </div>
+      <div class="out-pane" data-t="magnific">
+        <div class="out-box" id="outMagnific"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+          <div style="font-size:11px;color:hsl(var(--muted-foreground))">Quality & texture emphasis.</div>
+          <div class="btn-row" style="margin-top:0"><button class="btn-pri" onclick="copyOut('magnific')">Copy Prompt</button><button class="btn-save" onclick="saveTxt('magnific')">💾 Save .txt</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
 /* ===== GLOBALS ===== */
 let gender='male',pplCount='1',rawLock=false;
