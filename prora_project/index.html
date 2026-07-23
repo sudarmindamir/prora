@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Impromt — AI Photography Prompt Builder</title>
+<meta name="description" content="Build optimized photography prompts for ChatGPT, Gemini, and Magnific with reverse engineering auto-fill.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root,[data-theme="dark"]{
+  --bg:#08080c;--panel:#0f0f14;--panel-alt:#141419;--surface:#1a1a22;
+  --border:#252530;--border-light:#33334a;--text:#e4e4ec;--text-muted:#72728a;--text-dim:#4e4e66;
+  --header-bg:rgba(8,8,12,0.94);--center-bg:#0c0c18;--center-border:#2a2a50;
+  --re-bg:#12101e;--scene-bg:#16160e;--group-bg:rgba(0,0,0,0.25);--prompt-bg:#0a0a10;
+  --pfx:#6ee06b;--pfx-bg:rgba(110,224,107,0.07);--pfx-bd:rgba(110,224,107,0.18);
+  --scn:#e8d84a;--scn-bg:rgba(232,216,74,0.07);--scn-bd:rgba(232,216,74,0.18);
+  --sfx:#e85ac9;--sfx-bg:rgba(232,90,201,0.07);--sfx-bd:rgba(232,90,201,0.18);
+  --acc:#7c6aff;--acc-glow:rgba(124,106,255,0.12);
+  --ok:#4ade80;--warn:#fbbf24;--err:#f87171;
+  --viewport-bg:#0d0d14;--viewport-grid:#1a1a2a;--viewport-figure:#7c6aff;
+  --viewport-joint:#e8d84a;--viewport-camera:#6ee06b;
+}
+[data-theme="light"]{
+  --bg:#f2f2ef;--panel:#ffffff;--panel-alt:#f8f8f5;--surface:#ededea;
+  --border:#d5d5ce;--border-light:#c0c0b8;--text:#181818;--text-muted:#6a6a62;--text-dim:#9a9a90;
+  --header-bg:rgba(242,242,239,0.94);--center-bg:#f8f7ff;--center-border:#c0bcee;
+  --re-bg:#eeeaf8;--scene-bg:#f8f6ee;--group-bg:rgba(0,0,0,0.03);--prompt-bg:#f0f0ec;
+  --pfx:#2a8028;--pfx-bg:rgba(42,128,40,0.07);--pfx-bd:rgba(42,128,40,0.22);
+  --scn:#9e8c10;--scn-bg:rgba(158,140,16,0.07);--scn-bd:rgba(158,140,16,0.22);
+  --sfx:#b02e98;--sfx-bg:rgba(176,46,152,0.07);--sfx-bd:rgba(176,46,152,0.22);
+  --acc:#5b46e0;--acc-glow:rgba(91,70,224,0.08);
+  --ok:#1a8a42;--warn:#b88008;--err:#cc2020;
+  --viewport-bg:#e8e8e0;--viewport-grid:#d0d0c8;--viewport-figure:#5b46e0;
+  --viewport-joint:#9e8c10;--viewport-camera:#2a8028;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh;transition:background .3s,color .3s;font-size:12px}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+.header{padding:12px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);background:var(--header-bg);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100}
+.logo{font-size:20px;font-weight:700;letter-spacing:-0.3px}
+.header-actions{display:flex;gap:10px;align-items:center}
+.theme-sw{width:44px;height:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;cursor:pointer;display:flex;align-items:center;padding:0 3px;transition:all .3s}
+.theme-sw .dot{width:18px;height:18px;border-radius:50%;background:var(--acc);transition:transform .3s;display:flex;align-items:center;justify-content:center;font-size:10px}
+[data-theme="dark"] .theme-sw .dot{transform:translateX(0)}[data-theme="light"] .theme-sw .dot{transform:translateX(20px)}
+.hdr-btn{font-size:10px;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:transparent;font-family:inherit;transition:all .2s}
+.hdr-btn:hover{border-color:var(--acc);color:var(--acc)}
+
+.badge{font-size:8px;font-weight:700;padding:2px 7px;border-radius:3px;text-transform:uppercase;letter-spacing:.06em;display:inline-block}
+.badge-pfx{background:var(--pfx-bg);color:var(--pfx);border:1px solid var(--pfx-bd)}
+.badge-scn{background:var(--scn-bg);color:var(--scn);border:1px solid var(--scn-bd)}
+.badge-sfx{background:var(--sfx-bg);color:var(--sfx);border:1px solid var(--sfx-bd)}
+
+.top-bar{margin:16px 20px;display:flex;gap:16px;flex-wrap:wrap}
+.info-pill{display:flex;align-items:baseline;gap:6px;flex:1;min-width:200px;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:10px;color:var(--text-muted)}
+
+.collapse-section{margin:0 20px 14px;background:var(--re-bg);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.collapse-hdr{padding:10px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;font-size:12px;font-weight:600}
+.collapse-hdr:hover{background:var(--acc-glow)}
+.collapse-body{padding:0 16px 16px;display:none}.collapse-body.open{display:block}
+.collapse-arrow{transition:transform .3s;font-size:14px;color:var(--text-muted)}.collapse-arrow.open{transform:rotate(180deg)}
+
+.main-grid{display:grid;grid-template-columns:3fr 8fr 3fr;gap:16px;padding:0 20px 20px;align-items:start}
+@media(max-width:1300px){.main-grid{grid-template-columns:1fr}}
+.side-col{min-width:0}
+.side-col .col-hdr{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.center-col{min-width:0}
+.center-panel{background:var(--center-bg);border:2px solid var(--center-border);border-radius:12px;padding:16px;position:sticky;top:60px;max-height:calc(100vh - 75px);overflow-y:auto;box-shadow:0 0 40px rgba(124,106,255,0.06)}
+
+.blk{margin-bottom:12px;padding:12px;background:var(--panel);border:1px solid var(--border);border-radius:8px}
+.blk-pfx{border-left:3px solid var(--pfx)}.blk-scn{border-left:3px solid var(--scn)}.blk-sfx{border-left:3px solid var(--sfx)}
+.blk-hdr{font-size:11px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.lock-btn{width:20px;height:20px;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--text-dim);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:auto;flex-shrink:0}
+.lock-btn.locked{background:var(--acc-glow);border-color:var(--acc);color:var(--acc)}
+
+.fld{margin-bottom:8px}.fld:last-child{margin-bottom:0}
+.fld-lbl{display:block;font-size:8px;color:var(--text-muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+select{width:100%;padding:7px 28px 7px 8px;background:var(--surface);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:11px;font-family:inherit;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%2372728a'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;cursor:pointer;transition:border-color .2s}
+select:focus{outline:none;border-color:var(--acc)}select:disabled{opacity:.45;cursor:not-allowed}
+select.auto-filled{border-color:var(--ok);box-shadow:0 0 0 1px rgba(74,222,128,.15)}
+textarea,input[type="text"]{width:100%;padding:7px 8px;border:1px solid var(--border);border-radius:5px;background:var(--surface);color:var(--text);font-size:11px;font-family:inherit;resize:vertical;transition:border-color .2s}
+textarea{min-height:36px}textarea:focus,input[type="text"]:focus{outline:none;border-color:var(--acc)}
+textarea::placeholder,input::placeholder{color:var(--text-dim)}
+.cust-inp{display:none;margin-top:4px}.cust-inp.show{display:block}
+
+.tog-grp{display:flex;gap:0;border-radius:5px;overflow:hidden;border:1px solid var(--border);margin-bottom:6px}
+.tog-btn{flex:1;padding:6px 4px;border:none;background:var(--surface);color:var(--text-muted);font-size:10px;font-family:inherit;font-weight:500;cursor:pointer;transition:all .2s;text-align:center}
+.tog-btn.active{background:var(--acc);color:#fff}.tog-btn:hover:not(.active){background:var(--panel-alt)}
+
+.scene-area{margin:0 20px 14px;background:linear-gradient(135deg,var(--scene-bg),var(--panel-alt));border:2px solid var(--scn-bd);border-radius:10px;padding:16px}
+.scene-area .hdr{font-size:14px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.scene-area .sub{font-size:10px;color:var(--text-muted);margin-bottom:12px}
+.scene-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.sg{background:var(--group-bg);border:1px solid var(--border);border-radius:7px;padding:10px}
+.sg-title{font-size:9px;font-weight:600;color:var(--scn);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--scn-bd)}
+
+.tpl-section{margin:0 20px 14px}
+.tpl-title{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px}
+.tpl-card{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:8px 10px;cursor:pointer;transition:all .2s}
+.tpl-card:hover{border-color:var(--pfx);transform:translateY(-1px)}
+.tpl-card .tn{font-size:11px;font-weight:600;margin-bottom:2px}
+.tpl-card .td{font-size:9px;color:var(--text-muted)}
+.tpl-tag{display:inline-block;font-size:7px;font-weight:700;padding:1px 5px;border-radius:3px;margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+.tpl-tag.film{background:var(--sfx-bg);color:var(--sfx)}
+.tpl-tag.street{background:var(--pfx-bg);color:var(--pfx)}
+.tpl-tag.mood{background:var(--scn-bg);color:var(--scn)}
+
+.color-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;background:var(--surface);padding:6px;border-radius:5px}
+.sw-wrap{position:relative;width:26px;height:26px;flex-shrink:0;border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.color-row input[type="color"]{position:absolute;top:-3px;left:-3px;width:32px;height:32px;border:none;padding:0;cursor:pointer;background:none}
+.c-meta{flex:1;display:flex;flex-direction:column;gap:2px}
+.c-lbl{font-size:8px;color:var(--text-muted)}
+.hex-inp{background:var(--panel);border:1px solid var(--border);color:var(--text);font-size:9px;padding:3px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace;width:64px}
+.tog-use{display:flex;align-items:center;gap:3px;font-size:8px;color:var(--text-muted)}
+
+.out-tabs{display:flex;gap:0;margin-bottom:10px;border-radius:6px;overflow:hidden;border:1px solid var(--center-border)}
+.out-tab{flex:1;padding:7px 4px;border:none;background:var(--surface);color:var(--text-muted);font-size:9px;font-weight:600;font-family:inherit;cursor:pointer;text-align:center;text-transform:uppercase;letter-spacing:.04em}
+.out-tab.active{background:var(--acc);color:#fff}.out-tab:hover:not(.active){background:var(--panel-alt)}
+.out-pane{display:none}.out-pane.active{display:block}
+.out-box{font-size:11px;line-height:1.65;padding:10px;background:var(--prompt-bg);border-radius:6px;margin-bottom:8px;border:1px solid var(--border);overflow-y:auto}
+.raw-edit{width:100%;min-height:280px;padding:10px;background:var(--prompt-bg);border:1px solid var(--center-border);border-radius:6px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.7;resize:vertical;white-space:pre;overflow-x:auto}
+.raw-edit:focus{outline:none;border-color:var(--acc)}
+.plat-lbl{font-size:9px;font-weight:600;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em}
+.plat-desc{font-size:9px;color:var(--text-dim);margin-bottom:8px}
+.btn-row{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+.btn-row button{flex:1;padding:8px 8px;border-radius:5px;border:none;font-size:9px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-pri{background:var(--acc);color:#fff}.btn-pri:hover{opacity:.85}
+.btn-sec{background:var(--surface);color:var(--text-muted);border:1px solid var(--border)!important}.btn-sec:hover{border-color:var(--acc)!important;color:var(--text)}
+.btn-save{background:var(--ok);color:#000}.btn-save:hover{opacity:.85}
+
+.viewport-container{margin:0 20px 14px;background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.viewport-header{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.viewport-header:hover{background:var(--acc-glow)}
+.viewport-body{display:none;padding:0 14px 14px}.viewport-body.open{display:block}
+.vp-canvas-wrap{position:relative;width:100%;aspect-ratio:4/3;background:var(--viewport-bg);border-radius:8px;overflow:hidden;border:1px solid var(--border);margin-bottom:10px}
+.vp-canvas-wrap canvas{width:100%;height:100%;display:block}
+.vp-ctrl{display:flex;flex-direction:column;gap:3px;margin-bottom:6px}
+.vp-ctrl label{font-size:8px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.vp-ctrl input[type="range"]{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:var(--border);border-radius:2px;cursor:pointer}
+.vp-ctrl input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--acc);cursor:pointer}
+
+.footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--text-dim)}
+.footer a{color:var(--acc);text-decoration:none}.footer a:hover{text-decoration:underline}
+.copy-email{cursor:pointer;padding:3px 8px;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--acc);font-size:10px;font-family:inherit}
+
+.toast{position:fixed;bottom:16px;right:16px;background:var(--acc);color:#fff;padding:8px 18px;border-radius:6px;font-size:11px;font-weight:600;opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;z-index:9999}
+.toast.show{opacity:1;transform:translateY(0)}
+.re-prompt-text{font-size:10px;color:var(--text-muted);line-height:1.7;font-family:'JetBrains Mono',monospace;white-space:pre-wrap;max-height:250px;overflow-y:auto}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(124,106,255,.3)}50%{box-shadow:0 0 0 5px rgba(124,106,255,0)}}
+.analyzing{animation:pulse 1.2s ease-in-out infinite}
+.conflict-warn{margin:0 20px 14px;display:none}
+.conflict-box{background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:10px 14px}
+.conflict-item{margin-bottom:4px;font-size:9px;color:var(--text-muted)}
+.conflict-item strong{color:var(--warn)}
+@media(max-width:900px){.header{padding:10px 12px}.top-bar,.collapse-section,.tpl-section,.scene-area,.viewport-container{margin-left:10px;margin-right:10px}.main-grid{padding:0 10px 16px}}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="logo">Impromt</div>
+  <div class="header-actions">
+    <div class="theme-sw" onclick="toggleTheme()" title="Toggle Light/Dark"><div class="dot" id="thDot">🌙</div></div>
+    <button class="hdr-btn" onclick="resetAll()">Reset</button>
+  </div>
+</header>
+
+<div class="top-bar">
+  <div class="info-pill"><span class="badge badge-pfx">Prefix</span> Style, format, photographic opener</div>
+  <div class="info-pill"><span class="badge badge-scn">Scene</span> Subject, action, setting, mood</div>
+  <div class="info-pill"><span class="badge badge-sfx">Suffix</span> Technical parameters, finishing</div>
+</div>
+
+<!-- BRAND -->
+<div class="collapse-section" style="border-color:var(--acc)">
+  <div class="collapse-hdr" onclick="togCol(this)"><span>🏢 Brand Industry & Usage Context</span><span class="collapse-arrow">▼</span></div>
+  <div class="collapse-body open">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div class="fld"><label class="fld-lbl">Industry</label><select id="brandIndustry" onchange="hc(this,'brandIndustryC')"><option value="">— skip —</option><option value="artificial intelligence and technology">AI & Tech</option><option value="fashion and apparel">Fashion</option><option value="streetwear and urban culture">Streetwear</option><option value="luxury and premium goods">Luxury</option><option value="beauty and cosmetics">Beauty</option><option value="fitness and wellness">Fitness</option><option value="food and beverage">Food & Bev</option><option value="automotive and mobility">Automotive</option><option value="real estate and architecture">Real Estate</option><option value="finance and fintech">Finance</option><option value="healthcare and medical">Healthcare</option><option value="entertainment and media">Entertainment</option><option value="music and recording industry">Music</option><option value="sports and athletics">Sports</option><option value="travel and hospitality">Travel</option><option value="logistics and supply chain">Logistics</option><option value="gaming and esports">Gaming</option><option value="magazine and editorial publishing">Magazine</option><option value="e-commerce and retail">E-Commerce</option><option value="SaaS and software">SaaS</option><option value="crypto and web3">Crypto</option><option value="personal branding and coaching">Personal Brand</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="brandIndustryC"><input type="text" placeholder="Custom industry..." oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Usage</label><select id="brandUsage" onchange="hc(this,'brandUsageC')"><option value="">— skip —</option><option value="website hero banner">Website Hero</option><option value="social media content">Social Media</option><option value="magazine editorial spread">Magazine Editorial</option><option value="billboard and outdoor advertising">Billboard</option><option value="product packaging">Packaging</option><option value="pitch deck and presentation">Pitch Deck</option><option value="brand identity system">Brand Identity</option><option value="campaign lookbook">Lookbook</option><option value="app onboarding screens">App Onboarding</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="brandUsageC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Tone</label><select id="brandTone" onchange="hc(this,'brandToneC')"><option value="">— skip —</option><option value="corporate and authoritative">Corporate</option><option value="youthful and energetic">Youthful</option><option value="premium and exclusive">Premium</option><option value="edgy and disruptive">Edgy</option><option value="clean and minimal">Minimal</option><option value="futuristic and innovative">Futuristic</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="brandToneC"><input type="text" oninput="gen()"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- REVERSE ENGINEERING -->
+<div class="collapse-section" style="border-color:rgba(124,106,255,.2)">
+  <div class="collapse-hdr" onclick="togCol(this)"><span>🔬 Reverse Engineering — Auto-Fill from Image Analysis</span><span class="collapse-arrow">▼</span></div>
+  <div class="collapse-body" id="reBody">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+      <div style="background:var(--group-bg);border:1px solid var(--border);border-radius:6px;padding:10px"><div style="font-size:11px;font-weight:600;margin-bottom:4px">① Copy RE Prompt</div><div style="font-size:9px;color:var(--text-muted)">Copy the extraction prompt below.</div></div>
+      <div style="background:var(--group-bg);border:1px solid var(--border);border-radius:6px;padding:10px"><div style="font-size:11px;font-weight:600;margin-bottom:4px">② Upload + Paste</div><div style="font-size:9px;color:var(--text-muted)">Upload image to ChatGPT/Gemini with prompt.</div></div>
+      <div style="background:var(--group-bg);border:1px solid var(--border);border-radius:6px;padding:10px"><div style="font-size:11px;font-weight:600;margin-bottom:4px">③ Auto-Fill</div><div style="font-size:9px;color:var(--text-muted)">Paste result → variables auto-filled.</div></div>
+    </div>
+    <div style="background:var(--prompt-bg);border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span style="font-size:9px;font-weight:600;color:var(--acc);text-transform:uppercase;letter-spacing:.08em">📋 RE Prompt</span>
+        <button class="btn-pri" style="flex:none;padding:4px 10px;font-size:8px" onclick="copyRE()">Copy</button>
+      </div>
+      <div class="re-prompt-text" id="rePromptText">Analyze this image as a professional photography director. Extract ONLY the photographic and cinematographic qualities. 
+
+⚠️ CRITICAL RULES:
+- COMPLETELY IGNORE any text, typography, logos, watermarks, graphic overlays, shapes, UI elements in the image
+- COMPLETELY IGNORE any graphic design elements (borders, frames, vector shapes, icons)
+- ONLY analyze the PHOTOGRAPHIC content: lighting, composition, subject, camera settings, mood, colors
+- If the image contains text overlays or graphic elements, pretend they don't exist
+- Focus 100% on what a camera captured, not what was added in post-production design
+
+For each variable give the EXACT value. If not standard, write "CUSTOM: [description]".
+
+=== PREFIX ===
+PHOTOGRAPHY_GENRE: [editorial portrait / corporate headshot / environmental portrait / street documentary / fashion editorial / cyberpunk neon / high streetwear / cinematic film still / film noir / beauty close-up / conceptual / CUSTOM]
+CAMERA_FORMAT: [full frame DSLR / medium format / 35mm film analog / cinematic anamorphic / Hasselblad / Leica / RED 8K / CUSTOM]
+ART_DIRECTION: [quiet confidence / bold editorial / warm approachable / minimal precise / raw documentary / dark cinematic / cyberpunk neon / high streetwear / Wes Anderson / Wong Kar-wai / Blade Runner / film noir / vintage retro / CUSTOM]
+
+=== SCENE ===
+PEOPLE_COUNT: [1 / 2 / 3+ / group]
+SUBJECT_GENDER: [male / female / non-binary / mixed]
+SUBJECT_ETHNICITY: [East Asian / South Asian / Southeast Asian / Middle Eastern / African / African American / European / Latin American / Scandinavian / Mediterranean / mixed / CUSTOM]
+SUBJECT_TYPE: [professional / entrepreneur / model / athlete / artist / musician / street style / cyberpunk character / CUSTOM]
+SUBJECT_AGE: [early 20s / late 20s / 30s / 40s / 50s / 60s+ / teen / CUSTOM]
+SUBJECT_BUILD: [slim / athletic / average / muscular / petite / tall lean / CUSTOM]
+SUBJECT_HAIR: [short dark / long blonde / curly auburn / buzz cut / braided / silver gray / slicked back / messy / bald / afro / bob / dyed vibrant / CUSTOM]
+FACIAL_EXPRESSION: [confident smile / serious contemplation / genuine laugh / subtle smirk / pensive gaze / calm neutral / fierce determination / mysterious / cold calculating / vulnerable raw / CUSTOM]
+MICRO_EXPRESSION: [eyebrow raise / squinting / lip bite / jaw clench / half smile / furrowed brow / wide eyes / none / CUSTOM]
+EYE_INTENSITY: [soft warm / piercing sharp / dreamy / cold calculating / bright enthusiastic / hooded mysterious / CUSTOM]
+SUBJECT_FACING: [facing camera directly / three-quarter left / three-quarter right / profile left / profile right / back turned over shoulder / back view / CUSTOM]
+MAKEUP: [natural minimal / editorial bold / smoky eye / dewy glow / no makeup / heavy glam / theatrical / CUSTOM]
+WARDROBE: [structured blazer / minimal modern / premium casual / streetwear urban / high streetwear brands / techwear cyberpunk / all black / vintage retro / evening formal / CUSTOM]
+WARDROBE_DETAIL: [describe garments or "none"]
+OUTERWEAR: [none / leather jacket / denim jacket / trench coat / bomber jacket / puffer / blazer / hoodie / CUSTOM]
+ACCESSORIES: [none / gold jewelry / luxury watch / sunglasses / chain necklace / headphones / bucket hat / CUSTOM]
+ACTION_POSE: [standing confidently / seated / walking / leaning / arms folded / crouching / jumping / CUSTOM]
+HAND_POSITION: [relaxed at side / pocket / arms crossed / holding object / touching face / through hair / CUSTOM]
+EMOTION_CORE: [calm authority / confident / innovative / rebellious / mysterious / empowered / CUSTOM]
+POWER_LEVEL: [soft / balanced / dominant]
+ARCHETYPE: [innovator / leader / creator / strategist / rebel / sage / explorer / CUSTOM]
+ENVIRONMENT: [studio / modern interior / urban street / corporate office / industrial / outdoor natural / neon city night / dark alley / abandoned warehouse / luxury penthouse / CUSTOM]
+ATMOSPHERE: [premium / dynamic / calm / mysterious / tense / gritty / nostalgic / futuristic / CUSTOM]
+FRAME_DENSITY: [minimal isolated / balanced / environmental storytelling / CUSTOM]
+MOTION_BLUR: [none / slight subject / heavy subject / background panning / foreground blur / radial zoom / CUSTOM]
+FOREGROUND_DISTANCE: [none / very close touching lens / close 0.5m / medium 1-2m / far 3m+ / CUSTOM]
+BACKGROUND_DISTANCE: [very close 1m / medium 3-5m / far 10m+ / infinite horizon / CUSTOM]
+FRAMING_CROP: [full frame no crop / cropped at forehead / cropped mid-chest / cropped at waist / tight face crop eyes-to-chin / asymmetric crop / off-center crop / CUSTOM]
+
+=== SUFFIX ===
+PALETTE: [monochromatic / high contrast / cool tech / warm premium / desaturated / neon saturated / earth tones / pastel / CUSTOM]
+OUTFIT_HEX: [hex or "not specified"]
+BACKGROUND_HEX: [hex or "not specified"]
+LIGHTING: [soft editorial / Rembrandt / split / rim backlit / natural window / golden hour / neon gel / low key / high key / CUSTOM]
+SHADOW: [low soft / medium balanced / high sculpted / chiaroscuro]
+WHITE_BALANCE: [neutral 5500K / warm 3200K / cool 7000K / golden sunset / CUSTOM]
+LENS: [24mm wide / 35mm / 50mm / 85mm / 135mm / 200mm+ / CUSTOM]
+APERTURE: [f/1.4 bokeh / f/2.0 shallow / f/4.0 balanced / f/8.0 deep / CUSTOM]
+CAMERA_ANGLE: [low angle / eye level / slight high / dutch angle / overhead / CUSTOM]
+SHOT_SIZE: [extreme CU / close-up / medium CU / waist up / full body / long shot / CUSTOM]
+COMPOSITION: [rule of thirds / centered symmetrical / leading lines / negative space / golden ratio / CUSTOM]
+RETOUCH: [natural pore / minimal documentary / beauty smooth / heavy fashion / CUSTOM]
+COLOR_GRADE: [clean commercial / filmic S-curve / desaturated / high contrast / vintage / B&W / matte fade / CUSTOM]
+RESOLUTION: [sharp high detail / 8k ultra / hyper detailed / soft focus / CUSTOM]
+ASPECT_RATIO: [1:1 / 4:5 / 3:4 / 9:16 / 16:9 / 2:3 / 3:2 / 21:9 / CUSTOM]
+
+Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEMENTS.</div>
+    </div>
+    <div><label class="fld-lbl" style="margin-bottom:4px;display:block">📥 Paste AI Result</label><textarea id="rePaste" style="min-height:80px;font-family:'JetBrains Mono',monospace;font-size:10px" placeholder="Paste ChatGPT/Gemini response here..."></textarea></div>
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <button class="btn-pri" style="flex:none;padding:7px 16px" onclick="analyzeRE()" id="reBtn">🔍 Analyze & Auto-Fill</button>
+      <button class="btn-sec" style="flex:none;padding:7px 12px" onclick="document.getElementById('rePaste').value='';document.getElementById('reResult').style.display='none'">Clear</button>
+    </div>
+    <div id="reResult" style="margin-top:8px;display:none"></div>
+  </div>
+</div>
+
+<!-- TEMPLATES -->
+<div class="tpl-section">
+  <div class="tpl-title">Art Direction Templates — Click to Apply</div>
+  <div class="tpl-grid" id="tplGrid"></div>
+</div>
+
+<!-- SCENE DESCRIPTION -->
+<div class="scene-area">
+  <div class="hdr">🎬 Scene Description <span class="badge badge-scn">Primary Editor</span></div>
+  <div class="sub">Core of the prompt — each section is a separate detail column. Change freely while Prefix & Suffix stay locked.</div>
+  <div class="scene-grid">
+    <!-- Subject -->
+    <div class="sg"><div class="sg-title">👤 Subject</div>
+      <div class="fld"><label class="fld-lbl">People</label><div class="tog-grp" id="pplGrp"><button class="tog-btn active" data-v="1" onclick="setPpl('1')">1</button><button class="tog-btn" data-v="2" onclick="setPpl('2')">2</button><button class="tog-btn" data-v="3+" onclick="setPpl('3+')">3+</button><button class="tog-btn" data-v="custom" onclick="setPpl('custom')">✏️</button></div><div class="cust-inp" id="pplCust"><input type="text" id="pplCustVal" placeholder="e.g. crowd" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Gender</label><div class="tog-grp" id="genGrp"><button class="tog-btn active" data-v="male" onclick="setGn('male')">♂ Male</button><button class="tog-btn" data-v="female" onclick="setGn('female')">♀ Female</button></div></div>
+      <div class="fld"><label class="fld-lbl">Ethnicity</label><select id="ethnicity" onchange="hc(this,'ethnicityC')"><option value="">— skip —</option><option value="East Asian features">East Asian</option><option value="Southeast Asian features">Southeast Asian</option><option value="South Asian features">South Asian</option><option value="Middle Eastern features">Middle Eastern</option><option value="African features dark skin">African</option><option value="African American features">African American</option><option value="European Caucasian features">European</option><option value="Latin American Hispanic features">Latin / Hispanic</option><option value="Scandinavian Nordic features">Scandinavian</option><option value="Mediterranean features olive skin">Mediterranean</option><option value="mixed ethnicity ambiguous features">Mixed</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="ethnicityC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Type</label><select id="subjectType" onchange="hc(this,'subjectTypeC')"><option value="">— skip —</option><option value="professional">Professional</option><option value="young entrepreneur">Entrepreneur</option><option value="senior executive">Executive</option><option value="creative director">Creative Dir</option><option value="fashion model">Model</option><option value="athlete">Athlete</option><option value="street style icon">Street Style</option><option value="cyberpunk character">Cyberpunk</option><option value="musician">Musician</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="subjectTypeC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Age</label><select id="subjectAge" onchange="hc(this,'subjectAgeC')"><option value="">— skip —</option><option value="early 20s">Early 20s</option><option value="late 20s">Late 20s</option><option value="30s" selected>30s</option><option value="40s">40s</option><option value="50s">50s</option><option value="60s+">60s+</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="subjectAgeC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Build</label><select id="subjectBuild"><option value="">— skip —</option><option value="average">Average</option><option value="slim">Slim</option><option value="athletic">Athletic</option><option value="muscular">Muscular</option><option value="petite">Petite</option><option value="tall lean">Tall & Lean</option></select></div>
+      <div class="fld"><label class="fld-lbl">Hair</label><select id="subjectHair" onchange="hc(this,'subjectHairC')"><option value="">— skip —</option><option value="short dark">Short dark</option><option value="long blonde">Long blonde</option><option value="curly auburn">Curly auburn</option><option value="buzz cut">Buzz cut</option><option value="braided">Braided</option><option value="silver gray">Silver gray</option><option value="slicked back">Slicked back</option><option value="messy textured">Messy</option><option value="bald">Bald</option><option value="afro natural">Afro</option><option value="bob cut">Bob cut</option><option value="dyed vibrant">Dyed vibrant</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="subjectHairC"><input type="text" oninput="gen()"></div></div>
+    </div>
+
+    <!-- Face Detail -->
+    <div class="sg"><div class="sg-title">😤 Face Detail</div>
+      <div class="fld"><label class="fld-lbl">Facing Direction</label><select id="subjectFacing" onchange="hc(this,'subjectFacingC')"><option value="">— skip —</option><option value="facing camera directly">Facing camera</option><option value="three-quarter left">¾ Left</option><option value="three-quarter right">¾ Right</option><option value="profile left">Profile L</option><option value="profile right">Profile R</option><option value="back turned over shoulder">Over shoulder</option><option value="back view">Back view</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="subjectFacingC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Expression</label><select id="expression" onchange="hc(this,'expressionC')"><option value="">— skip —</option><optgroup label="Strong"><option value="confident smile">Confident smile</option><option value="fierce determination">Fierce</option><option value="defiant stare">Defiant</option><option value="stoic dignified">Stoic</option></optgroup><optgroup label="Calm"><option value="serious contemplation">Contemplation</option><option value="calm neutral">Neutral</option><option value="pensive gaze">Pensive</option></optgroup><optgroup label="Warm"><option value="genuine laugh">Genuine laugh</option><option value="joyful radiant">Joyful</option><option value="playful grin">Playful</option><option value="subtle smirk">Subtle smirk</option></optgroup><optgroup label="Dark"><option value="mysterious enigmatic">Mysterious</option><option value="cold calculating">Cold</option><option value="brooding intensity">Brooding</option></optgroup><optgroup label="Raw"><option value="vulnerable raw emotion">Vulnerable</option><option value="melancholic sadness">Melancholic</option></optgroup><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="expressionC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Micro-Expression</label><select id="microExpr" onchange="hc(this,'microExprC')"><option value="">— none —</option><option value="eyebrow raise">Eyebrow raise</option><option value="squinting">Squinting</option><option value="lip bite">Lip bite</option><option value="jaw clench">Jaw clench</option><option value="half smile">Half smile</option><option value="furrowed brow">Furrowed brow</option><option value="wide eyes">Wide eyes</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="microExprC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Eye Intensity</label><select id="eyeIntensity"><option value="">— skip —</option><option value="soft warm gaze">Soft warm</option><option value="piercing sharp stare">Piercing</option><option value="dreamy unfocused">Dreamy</option><option value="cold calculating">Cold</option><option value="bright enthusiastic">Bright</option><option value="hooded mysterious">Hooded</option></select></div>
+      <div class="fld"><label class="fld-lbl">Makeup</label><select id="makeup" onchange="hc(this,'makeupC')"><option value="">— skip —</option><option value="natural minimal makeup">Natural minimal</option><option value="editorial bold makeup">Editorial bold</option><option value="smoky eye dramatic">Smoky eye</option><option value="dewy glow skin">Dewy glow</option><option value="no makeup bare face">No makeup</option><option value="heavy glam full coverage">Heavy glam</option><option value="theatrical artistic makeup">Theatrical</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="makeupC"><input type="text" oninput="gen()"></div></div>
+    </div>
+
+    <!-- Clothing & Outer -->
+    <div class="sg"><div class="sg-title">👔 Clothing & Outer</div>
+      <div class="fld"><label class="fld-lbl">Wardrobe</label><select id="wardrobe" onchange="hc(this,'wardrobeC')"><option value="">— skip —</option><option value="structured blazer">Blazer</option><option value="minimal modern">Minimal modern</option><option value="premium casual">Premium casual</option><option value="streetwear urban oversized">Streetwear</option><option value="high streetwear brands">High streetwear</option><option value="techwear cyberpunk">Techwear</option><option value="all black monochrome">All black</option><option value="vintage retro">Vintage retro</option><option value="evening formal">Evening formal</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="wardrobeC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Wardrobe Detail</label><textarea id="wardrobeDetail" placeholder="e.g. navy blazer, white turtleneck" oninput="gen()"></textarea></div>
+      <div class="fld"><label class="fld-lbl">Outerwear</label><select id="outerwear" onchange="hc(this,'outerwearC')"><option value="">— none —</option><option value="leather jacket">Leather jacket</option><option value="denim jacket">Denim jacket</option><option value="trench coat">Trench coat</option><option value="bomber jacket">Bomber</option><option value="puffer jacket">Puffer</option><option value="blazer layered">Blazer</option><option value="oversized hoodie">Hoodie</option><option value="windbreaker">Windbreaker</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="outerwearC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Accessories</label><select id="accessories" onchange="hc(this,'accessoriesC')"><option value="">— none —</option><option value="gold jewelry">Gold jewelry</option><option value="luxury watch">Watch</option><option value="sunglasses">Sunglasses</option><option value="chain necklace">Chain</option><option value="headphones">Headphones</option><option value="bucket hat">Bucket hat</option><option value="rings">Rings</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="accessoriesC"><input type="text" oninput="gen()"></div></div>
+    </div>
+
+    <!-- Body & Action -->
+    <div class="sg"><div class="sg-title">🎬 Body & Action</div>
+      <div class="fld"><label class="fld-lbl">Action / Pose</label><select id="action" onchange="hc(this,'actionC')"><option value="">— skip —</option><option value="standing confidently">Standing</option><option value="seated at desk">Seated</option><option value="walking purposefully">Walking</option><option value="leaning against wall">Leaning</option><option value="arms folded">Arms folded</option><option value="hands in pockets">Hands in pockets</option><option value="crouching low">Crouching</option><option value="jumping mid-air">Jumping</option><option value="running in motion">Running</option><option value="contrapposto stance">Contrapposto</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="actionC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Hand Position</label><select id="hand" onchange="hc(this,'handC')"><option value="">— skip —</option><option value="relaxed at side">Relaxed side</option><option value="one in pocket">Pocket</option><option value="arms crossed">Crossed</option><option value="holding object">Holding object</option><option value="touching face">Touching face</option><option value="gesturing">Gesturing</option><option value="through hair">Through hair</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="handC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Emotion Core</label><select id="emotionCore"><option value="">— skip —</option><option value="calm authority">Calm authority</option><option value="secure confident">Confident</option><option value="innovative leader">Innovative</option><option value="visionary">Visionary</option><option value="rebellious">Rebellious</option><option value="mysterious">Mysterious</option><option value="empowered">Empowered</option></select></div>
+      <div class="fld"><label class="fld-lbl">Power</label><select id="power"><option value="">— —</option><option value="soft">Soft</option><option value="balanced" selected>Balanced</option><option value="dominant">Dominant</option></select></div>
+      <div class="fld"><label class="fld-lbl">Archetype</label><select id="archetype" onchange="hc(this,'archetypeC')"><option value="">— skip —</option><option value="innovator">Innovator</option><option value="leader">Leader</option><option value="creator">Creator</option><option value="strategist">Strategist</option><option value="rebel">Rebel</option><option value="sage">Sage</option><option value="explorer">Explorer</option><option value="outlaw">Outlaw</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="archetypeC"><input type="text" oninput="gen()"></div></div>
+    </div>
+
+    <!-- Setting -->
+    <div class="sg"><div class="sg-title">🏙️ Setting & Mood</div>
+      <div class="fld"><label class="fld-lbl">Environment</label><select id="environment" onchange="hc(this,'environmentC')"><option value="">— skip —</option><option value="clean studio seamless backdrop">Studio</option><option value="modern interior glass concrete">Modern interior</option><option value="urban street">Urban street</option><option value="corporate office">Corporate office</option><option value="industrial concrete steel">Industrial</option><option value="outdoor natural">Outdoor natural</option><option value="neon-lit city night rain-soaked">Neon city night</option><option value="dark alley atmospheric">Dark alley</option><option value="abandoned warehouse">Warehouse</option><option value="luxury penthouse">Penthouse</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="environmentC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Atmosphere</label><select id="atmosphere" onchange="hc(this,'atmosphereC')"><option value="">— skip —</option><option value="premium">Premium</option><option value="dynamic energetic">Dynamic</option><option value="calm composed">Calm</option><option value="mysterious brooding">Mysterious</option><option value="tense dramatic">Tense</option><option value="gritty raw">Gritty</option><option value="nostalgic warm">Nostalgic</option><option value="futuristic">Futuristic</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="atmosphereC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Frame Density</label><select id="frameDensity" onchange="hc(this,'frameDensityC')"><option value="">— skip —</option><option value="minimal isolated">Minimal</option><option value="balanced">Balanced</option><option value="environmental storytelling">Environmental</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="frameDensityC"><input type="text" oninput="gen()"></div></div>
+    </div>
+
+    <!-- Motion & Depth -->
+    <div class="sg"><div class="sg-title">💨 Motion & Depth</div>
+      <div class="fld"><label class="fld-lbl">Motion Blur</label><select id="motionBlur" onchange="hc(this,'motionBlurC')"><option value="">— none —</option><option value="slight subject motion blur">Slight subject</option><option value="heavy subject motion blur">Heavy subject</option><option value="background motion blur panning">BG panning</option><option value="foreground motion blur">FG blur</option><option value="radial zoom blur">Radial zoom</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="motionBlurC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">FG Distance</label><select id="fgDist" onchange="hc(this,'fgDistC')"><option value="">— skip —</option><option value="very close touching lens">Very close</option><option value="close 0.5m">Close 0.5m</option><option value="medium 1-2m">Medium</option><option value="far 3m+">Far</option><option value="none">None</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="fgDistC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">BG Distance</label><select id="bgDist" onchange="hc(this,'bgDistC')"><option value="">— skip —</option><option value="very close 1m">Close 1m</option><option value="medium 3-5m">Medium</option><option value="far 10m+">Far</option><option value="infinite horizon">Infinite</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="bgDistC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Props</label><textarea id="props" placeholder="e.g. skateboard, neon sign" oninput="gen()"></textarea></div>
+      <div class="fld"><label class="fld-lbl">Scene Extra</label><textarea id="sceneExtra" placeholder="Weather, time, narrative..." oninput="gen()"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- PUPPET VIEWPORT -->
+<div class="viewport-container">
+  <div class="viewport-header" onclick="togCol(this)"><span style="font-size:12px;font-weight:600">📐 Puppet Rigging & Camera — Drag Joints to Pose</span><span class="collapse-arrow">▼</span></div>
+  <div class="viewport-body" id="vpBody">
+    <div style="font-size:9px;color:var(--text-muted);margin-bottom:8px">🖱️ Click & drag yellow joints. Use presets or camera sliders. Click Accept to apply.</div>
+    <div style="display:grid;grid-template-columns:1fr 160px;gap:10px;align-items:start">
+      <div class="vp-canvas-wrap" style="position:relative"><canvas id="vpCanvas"></canvas>
+        <div id="vpJointLbl" style="display:none;position:absolute;background:var(--acc);color:#fff;padding:2px 6px;border-radius:3px;font-size:8px;font-weight:600;pointer-events:none;white-space:nowrap"></div>
+      </div>
+      <div>
+        <div style="font-size:8px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;border-bottom:1px solid var(--border);padding-bottom:4px">Camera</div>
+        <div class="vp-ctrl"><label>Height</label><input type="range" id="vpCamH" min="-90" max="90" value="0" oninput="vpUpdate()"><span id="vpCamHV" style="font-size:8px;color:var(--text-dim)">Eye level</span></div>
+        <div class="vp-ctrl"><label>Distance</label><input type="range" id="vpCamD" min="50" max="300" value="150" oninput="vpUpdate()"><span id="vpCamDV" style="font-size:8px;color:var(--text-dim)">150</span></div>
+        <div class="vp-ctrl"><label>Shot</label><select id="vpShot" onchange="vpUpdate()" style="font-size:9px"><option value="medium">Medium</option><option value="close-up">Close-up</option><option value="medium CU">Med CU</option><option value="waist up">Waist up</option><option value="full body">Full body</option><option value="long shot">Long</option></select></div>
+        <div style="font-size:8px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin:8px 0 4px;border-bottom:1px solid var(--border);padding-bottom:4px">Pose Presets</div>
+        <div style="display:flex;flex-wrap:wrap;gap:3px" id="posePresets">
+          <button class="tog-btn" style="font-size:8px;padding:3px 6px;flex:none" onclick="setPose('tpose')">T-Pose</button>
+          <button class="tog-btn" style="font-size:8px;padding:3px 6px;flex:none" onclick="setPose('stand')">Stand</button>
+          <button class="tog-btn" style="font-size:8px;padding:3px 6px;flex:none" onclick="setPose('walk')">Walk</button>
+          <button class="tog-btn" style="font-size:8px;padding:3px 6px;flex:none" onclick="setPose('sit')">Sit</button>
+          <button class="tog-btn" style="font-size:8px;padding:3px 6px;flex:none" onclick="setPose('lean')">Lean</button>
+          <button class="tog-btn" style="font-size:8px;padding:3px 6px;flex:none" onclick="setPose('crouch')">Crouch</button>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <button class="btn-pri" onclick="vpAccept()" style="flex:none;padding:7px 14px">✅ Accept & Apply</button>
+      <button class="btn-sec" onclick="setPose('tpose')" style="flex:none;padding:7px 10px">Reset</button>
+    </div>
+    <div id="vpInfo" style="display:none;margin-top:6px;font-size:9px;color:var(--ok);background:var(--group-bg);border:1px solid var(--border);border-radius:5px;padding:6px 8px"></div>
+  </div>
+</div>
+
+<!-- CONFLICT WARNINGS -->
+<div class="conflict-warn" id="conflictArea">
+  <div class="conflict-box">
+    <div style="font-size:10px;font-weight:700;color:var(--warn);margin-bottom:6px">⚠️ Potential Prompt Conflicts — fix in RAW Edit or adjust variables</div>
+    <div id="conflictList"></div>
+  </div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="main-grid">
+  <!-- LEFT: PREFIX -->
+  <div class="side-col">
+    <div class="col-hdr"><span>Prefix Builder</span><span class="badge badge-pfx">Prefix</span></div>
+    <div class="blk blk-pfx">
+      <div class="blk-hdr">Photography Style <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
+      <div class="fld"><label class="fld-lbl">Genre</label><select id="pfxGenre" onchange="hc(this,'pfxGenreC')"><option value="">— skip —</option><option value="editorial portrait" selected>Editorial portrait</option><option value="corporate headshot">Corporate headshot</option><option value="environmental portrait">Environmental</option><option value="street documentary">Street documentary</option><option value="fashion editorial">Fashion editorial</option><option value="cyberpunk neon portrait">Cyberpunk neon</option><option value="high streetwear photography">High streetwear</option><option value="cinematic film still">Cinematic film</option><option value="film noir high contrast">Film noir</option><option value="beauty close-up">Beauty CU</option><option value="conceptual">Conceptual</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxGenreC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Camera</label><select id="pfxCam" onchange="hc(this,'pfxCamC')"><option value="">— skip —</option><option value="full frame DSLR photorealistic" selected>Full frame DSLR</option><option value="medium format high fidelity">Medium format</option><option value="35mm film analog grain">35mm film</option><option value="cinematic anamorphic">Anamorphic</option><option value="Hasselblad">Hasselblad</option><option value="Leica rangefinder">Leica</option><option value="RED 8K">RED 8K</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxCamC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Art Direction</label><select id="pfxArt" onchange="hc(this,'pfxArtC')"><option value="">— skip —</option><option value="quiet confidence understated luxury">Quiet confidence</option><option value="bold graphic high impact editorial" selected>Bold editorial</option><option value="warm human approachable">Warm approachable</option><option value="minimal precise engineered">Minimal precise</option><option value="raw documentary honesty">Raw documentary</option><option value="dark moody cinematic">Dark cinematic</option><option value="cyberpunk neon futurism">Cyberpunk neon</option><option value="high streetwear editorial">High streetwear</option><option value="Wes Anderson pastel symmetry">Wes Anderson</option><option value="Wong Kar-wai neon melancholy">Wong Kar-wai</option><option value="Blade Runner dystopian">Blade Runner</option><option value="film noir dramatic">Film noir</option><option value="vintage retro nostalgic">Vintage retro</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxArtC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Prefix Extra</label><textarea id="pfxExtra" placeholder="Extra style notes..." oninput="gen()"></textarea></div>
+    </div>
+  </div>
+
+  <!-- CENTER: OUTPUT -->
+  <div class="center-col">
+    <div class="col-hdr" style="border-bottom-color:var(--center-border)"><span style="color:var(--text);font-weight:600;font-size:10px">⚡ FINAL PROMPT OUTPUT</span></div>
+    <div class="center-panel">
+      <div class="out-tabs">
+        <button class="out-tab active" data-t="raw" onclick="swTab('raw')">RAW Edit</button>
+        <button class="out-tab" data-t="chatgpt" onclick="swTab('chatgpt')">ChatGPT</button>
+        <button class="out-tab" data-t="gemini" onclick="swTab('gemini')">Gemini</button>
+        <button class="out-tab" data-t="magnific" onclick="swTab('magnific')">Magnific</button>
+      </div>
+      <div class="out-pane active" data-t="raw">
+        <div class="plat-lbl">📝 RAW Preview — edit any line to sync back to form fields & outputs</div>
+        <textarea class="raw-edit" id="rawEdit" oninput="onRawEdit()"></textarea>
+        <div style="font-size:8px;color:var(--text-dim);margin:4px 0">Format: "Label: value" per line. Changes sync bidirectionally.</div>
+        <div class="btn-row"><button class="btn-pri" onclick="copyOut('raw')">Copy RAW</button><button class="btn-sec" onclick="gen()">Regenerate</button><button class="btn-save" onclick="saveTxt()">💾 Save .txt</button></div>
+      </div>
+      <div class="out-pane" data-t="chatgpt">
+        <div class="plat-lbl">🟢 ChatGPT</div><div class="plat-desc">Structured, explicit negatives.</div>
+        <div class="out-box" id="outChatgpt"></div>
+        <div class="btn-row"><button class="btn-pri" onclick="copyOut('chatgpt')">Copy</button><button class="btn-save" onclick="saveTxt('chatgpt')">💾 Save</button></div>
+      </div>
+      <div class="out-pane" data-t="gemini">
+        <div class="plat-lbl">🔵 Gemini</div><div class="plat-desc">Concise, comma-separated.</div>
+        <div class="out-box" id="outGemini"></div>
+        <div class="btn-row"><button class="btn-pri" onclick="copyOut('gemini')">Copy</button><button class="btn-save" onclick="saveTxt('gemini')">💾 Save</button></div>
+      </div>
+      <div class="out-pane" data-t="magnific">
+        <div class="plat-lbl">🟣 Magnific</div><div class="plat-desc">Quality & texture emphasis.</div>
+        <div class="out-box" id="outMagnific"></div>
+        <div class="btn-row"><button class="btn-pri" onclick="copyOut('magnific')">Copy</button><button class="btn-save" onclick="saveTxt('magnific')">💾 Save</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: SUFFIX -->
+  <div class="side-col">
+    <div class="col-hdr"><span>Light, Camera & Post</span><span class="badge badge-sfx">Suffix</span></div>
+    <!-- Colors (hex only - no text color names to avoid conflict) -->
+    <div class="blk blk-sfx">
+      <div class="blk-hdr">🎨 Colors <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
+      <div class="fld"><label class="fld-lbl">Palette</label><select id="palette"><option value="">— —</option><option value="monochromatic">Mono</option><option value="high contrast">High contrast</option><option value="cool tech tone" selected>Cool tech</option><option value="warm premium">Warm premium</option><option value="desaturated editorial">Desaturated</option><option value="neon saturated">Neon</option><option value="earth tones">Earth</option><option value="pastel">Pastel</option></select></div>
+      <div class="color-row"><div class="sw-wrap"><input type="color" id="colOP" value="#1c2b45" oninput="sCol('OP')"></div><div class="c-meta"><div class="c-lbl">Outfit Primary</div><div style="display:flex;gap:4px;align-items:center"><input type="text" class="hex-inp" id="hexOP" value="#1c2b45" oninput="hCol('OP')"><label class="tog-use"><input type="checkbox" id="useOP" checked onchange="gen()">use</label></div></div></div>
+      <div class="color-row"><div class="sw-wrap"><input type="color" id="colOA" value="#c9a227" oninput="sCol('OA')"></div><div class="c-meta"><div class="c-lbl">Outfit Accent</div><div style="display:flex;gap:4px;align-items:center"><input type="text" class="hex-inp" id="hexOA" value="#c9a227" oninput="hCol('OA')"><label class="tog-use"><input type="checkbox" id="useOA" onchange="gen()">use</label></div></div></div>
+      <div class="color-row"><div class="sw-wrap"><input type="color" id="colBG" value="#e4e2dc" oninput="sCol('BG')"></div><div class="c-meta"><div class="c-lbl">Background</div><div style="display:flex;gap:4px;align-items:center"><input type="text" class="hex-inp" id="hexBG" value="#e4e2dc" oninput="hCol('BG')"><label class="tog-use"><input type="checkbox" id="useBG" onchange="gen()">use</label></div></div></div>
+    </div>
+    <!-- Lighting -->
+    <div class="blk blk-sfx">
+      <div class="blk-hdr">Lighting <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
+      <div class="fld"><label class="fld-lbl">Setup</label><select id="lighting" onchange="hc(this,'lightingC')"><option value="">— —</option><option value="soft editorial softbox" selected>Soft editorial</option><option value="Rembrandt">Rembrandt</option><option value="split lighting">Split</option><option value="rim backlit">Rim backlit</option><option value="natural window">Natural window</option><option value="golden hour">Golden hour</option><option value="neon gel">Neon gel</option><option value="low key dramatic">Low key</option><option value="high key bright">High key</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="lightingC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Shadow</label><select id="shadow"><option value="">— —</option><option value="low soft">Low soft</option><option value="medium balanced" selected>Medium</option><option value="high sculpted">High sculpted</option><option value="chiaroscuro">Chiaroscuro</option></select></div>
+      <div class="fld"><label class="fld-lbl">WB</label><select id="wb"><option value="">— —</option><option value="neutral 5500K" selected>5500K</option><option value="warm 3200K">3200K warm</option><option value="cool 7000K">7000K cool</option><option value="golden sunset">Golden</option></select></div>
+    </div>
+    <!-- Camera -->
+    <div class="blk blk-sfx">
+      <div class="blk-hdr">Camera <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
+      <div class="fld"><label class="fld-lbl">Lens</label><select id="lens"><option value="">— —</option><option value="24mm wide">24mm</option><option value="35mm environmental">35mm</option><option value="50mm natural">50mm</option><option value="85mm flattering" selected>85mm</option><option value="135mm telephoto">135mm</option></select></div>
+      <div class="fld"><label class="fld-lbl">Aperture</label><select id="aperture"><option value="">— —</option><option value="f/1.4 bokeh">f/1.4</option><option value="f/2.0 shallow" selected>f/2.0</option><option value="f/4.0 balanced">f/4.0</option><option value="f/8.0 deep">f/8.0</option></select></div>
+      <div class="fld"><label class="fld-lbl">Angle</label><select id="camAngle"><option value="">— —</option><option value="low angle">Low</option><option value="eye level" selected>Eye level</option><option value="slight high">Slight high</option><option value="dutch angle">Dutch</option><option value="overhead">Overhead</option></select></div>
+      <div class="fld"><label class="fld-lbl">Shot Size</label><select id="shotSize"><option value="">— —</option><option value="extreme CU">Extreme CU</option><option value="close-up">Close-up</option><option value="medium CU" selected>Medium CU</option><option value="waist up">Waist up</option><option value="full body">Full body</option><option value="long shot">Long shot</option></select></div>
+      <div class="fld"><label class="fld-lbl">Composition</label><select id="composition"><option value="">— —</option><option value="rule of thirds" selected>Thirds</option><option value="centered symmetrical">Centered</option><option value="leading lines">Leading lines</option><option value="negative space">Neg space</option><option value="golden ratio">Golden ratio</option></select></div>
+      <div class="fld"><label class="fld-lbl">Framing / Crop</label><select id="framing" onchange="hc(this,'framingC')"><option value="">— full frame —</option><option value="cropped at forehead showing eyes down">Crop at forehead</option><option value="tight face crop eyes to chin only">Tight face crop</option><option value="cropped mid-chest">Crop mid-chest</option><option value="cropped at waist">Crop at waist</option><option value="asymmetric off-center crop">Asymmetric crop</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="framingC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Aspect Ratio</label><select id="aspectRatio" onchange="hc(this,'aspectRatioC')"><option value="">— skip —</option><option value="1:1 square">1:1</option><option value="4:5 portrait">4:5</option><option value="3:4">3:4</option><option value="9:16 vertical">9:16</option><option value="16:9 cinematic">16:9</option><option value="2:3">2:3</option><option value="3:2 landscape">3:2</option><option value="21:9 ultrawide">21:9</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="aspectRatioC"><input type="text" oninput="gen()"></div></div>
+    </div>
+    <!-- Post -->
+    <div class="blk blk-sfx">
+      <div class="blk-hdr">Post <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
+      <div class="fld"><label class="fld-lbl">Retouch</label><select id="retouch"><option value="">— —</option><option value="natural pore preserved" selected>Natural</option><option value="minimal documentary">Minimal</option><option value="beauty smooth">Beauty</option><option value="heavy fashion porcelain">Heavy fashion</option></select></div>
+      <div class="fld"><label class="fld-lbl">Grade</label><select id="grade" onchange="hc(this,'gradeC')"><option value="">— —</option><option value="clean commercial" selected>Clean commercial</option><option value="filmic S-curve">Filmic</option><option value="desaturated muted">Desaturated</option><option value="high contrast punchy">High contrast</option><option value="vintage film">Vintage</option><option value="B&W">B&W</option><option value="matte fade">Matte fade</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="gradeC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Resolution</label><select id="resolution"><option value="">— —</option><option value="sharp high detail" selected>Sharp</option><option value="8k ultra sharp">8K ultra</option><option value="hyper detailed">Hyper</option><option value="soft focus">Soft focus</option></select></div>
+      <div class="fld"><label class="fld-lbl">Guardrails</label><select id="guardrails"><option value="photorealistic no plastic no text no watermark" selected>Photorealistic clean</option><option value="award winning no text">Award winning</option><option value="true proportions no artifacts">True proportions</option></select></div>
+      <div class="fld"><label class="fld-lbl">Suffix Extra</label><textarea id="sfxExtra" placeholder="Notes..." oninput="gen()"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <span>Impromt — Photography Prompt Builder</span>
+  <span>Feedback: <button class="copy-email" onclick="navigator.clipboard.writeText('hello@sudarmindamir.com').then(()=>toast('Email copied ✓'))">hello@sudarmindamir.com</button></span>
+</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== GLOBALS ===== */
+let gender='male',pplCount='1',rawLock=false;
+
+/* ===== THEME ===== */
+function toggleTheme(){const h=document.documentElement,n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);document.getElementById('thDot').textContent=n==='dark'?'🌙':'☀️';localStorage.setItem('it',n);vpDraw()}
+(()=>{const s=localStorage.getItem('it');if(s){document.documentElement.setAttribute('data-theme',s);document.getElementById('thDot').textContent=s==='dark'?'🌙':'☀️'}})();
+
+/* ===== COLLAPSE ===== */
+function togCol(el){const p=el.closest?el.closest('.collapse-section,.viewport-container'):el.parentElement;if(!p)return;const b=p.querySelector('.collapse-body,.viewport-body');const a=el.querySelector('.collapse-arrow');if(b)b.classList.toggle('open');if(a)a.classList.toggle('open')}
+
+/* ===== TOGGLES ===== */
+function setPpl(v){pplCount=v;document.querySelectorAll('#pplGrp .tog-btn').forEach(b=>b.classList.toggle('active',b.dataset.v===v));document.getElementById('pplCust').classList.toggle('show',v==='custom');gen()}
+function setGn(g){gender=g;document.querySelectorAll('#genGrp .tog-btn').forEach(b=>b.classList.toggle('active',b.dataset.v===g));gen()}
+function hc(sel,cid){const d=document.getElementById(cid);if(d)d.classList.toggle('show',sel.value==='custom');gen()}
+function gv(id){const el=document.getElementById(id);if(!el||!el.value||el.value==='custom'){const cd=document.getElementById(id+'C');if(cd){const inp=cd.querySelector('input');return inp?inp.value.trim():''}return ''}return el.value}
+
+/* ===== LOCK ===== */
+function togLk(btn){btn.classList.toggle('locked');const blk=btn.closest('.blk');if(!blk)return;const lk=btn.classList.contains('locked');btn.textContent=lk?'🔒':'🔓';blk.querySelectorAll('select,textarea,input:not([type=checkbox]):not([type=color])').forEach(e=>e.disabled=lk)}
+
+/* ===== COLORS ===== */
+function sCol(n){document.getElementById('hex'+n).value=document.getElementById('col'+n).value;gen()}
+function hCol(n){let h=document.getElementById('hex'+n).value.trim();if(!h.startsWith('#'))h='#'+h;if(/^#[0-9A-Fa-f]{6}$/.test(h))document.getElementById('col'+n).value=h;gen()}
+function getColors(){const m=[['OP','outfit primary'],['OA','outfit accent'],['BG','background']],s=[];m.forEach(([id,lbl])=>{const u=document.getElementById('use'+id);if(u&&u.checked)s.push(`${lbl} hex ${document.getElementById('hex'+id).value.trim()}`)});return s}
+
+/* ===== TEMPLATES ===== */
+const tpls=[
+  {n:"Street Documentary",d:"Film grain, raw city",tag:"street",s:{pfxGenre:"street documentary",pfxCam:"35mm film analog grain",pfxArt:"raw documentary honesty",environment:"urban street",atmosphere:"dynamic energetic",lighting:"natural window",lens:"35mm environmental",shotSize:"full body",composition:"leading lines",grade:"filmic S-curve"}},
+  {n:"Corporate Executive",d:"Studio, clean, professional",tag:"mood",s:{pfxGenre:"corporate headshot",pfxCam:"medium format high fidelity",pfxArt:"quiet confidence understated luxury",environment:"clean studio seamless backdrop",atmosphere:"premium",lighting:"soft editorial softbox",lens:"85mm flattering",shotSize:"medium CU",composition:"centered symmetrical",grade:"clean commercial"}},
+  {n:"Fashion Editorial",d:"Magazine, sculpted light",tag:"mood",s:{pfxGenre:"fashion editorial",pfxCam:"cinematic anamorphic",pfxArt:"bold graphic high impact editorial",lighting:"split lighting",shadow:"high sculpted",lens:"85mm flattering",shotSize:"waist up",composition:"negative space",grade:"high contrast punchy"}},
+  {n:"Cyberpunk Neon",d:"Neon, rain, techwear",tag:"film",s:{pfxGenre:"cyberpunk neon portrait",pfxCam:"cinematic anamorphic",pfxArt:"cyberpunk neon futurism",environment:"neon-lit city night rain-soaked",atmosphere:"mysterious brooding",lighting:"neon gel",shadow:"high sculpted",wb:"cool 7000K",lens:"35mm environmental",aperture:"f/1.4 bokeh",wardrobe:"techwear cyberpunk",grade:"high contrast punchy"}},
+  {n:"High Streetwear",d:"Oversized, urban swagger",tag:"street",s:{pfxGenre:"high streetwear photography",pfxArt:"high streetwear editorial",environment:"urban street",atmosphere:"dynamic energetic",lighting:"natural window",wardrobe:"high streetwear brands",camAngle:"low angle",shotSize:"full body",grade:"high contrast punchy"}},
+  {n:"Wes Anderson",d:"Pastel, symmetrical",tag:"film",s:{pfxGenre:"conceptual",pfxCam:"medium format high fidelity",pfxArt:"Wes Anderson pastel symmetry",atmosphere:"nostalgic warm",lighting:"soft editorial softbox",composition:"centered symmetrical",palette:"pastel",grade:"clean commercial"}},
+  {n:"Wong Kar-wai",d:"Neon melancholy, blur",tag:"film",s:{pfxGenre:"cinematic film still",pfxCam:"35mm film analog grain",pfxArt:"Wong Kar-wai neon melancholy",environment:"neon-lit city night rain-soaked",atmosphere:"mysterious brooding",lighting:"neon gel",wb:"warm 3200K",grade:"filmic S-curve",resolution:"soft focus"}},
+  {n:"Film Noir",d:"B&W, dramatic shadow",tag:"film",s:{pfxGenre:"film noir high contrast",pfxArt:"dark moody cinematic",environment:"dark alley atmospheric",atmosphere:"tense dramatic",lighting:"split lighting",shadow:"chiaroscuro",grade:"B&W",composition:"leading lines"}},
+  {n:"Golden Hour",d:"Warm backlight, glow",tag:"mood",s:{pfxGenre:"environmental portrait",pfxArt:"warm human approachable",environment:"outdoor natural",atmosphere:"calm composed",lighting:"golden hour",wb:"golden sunset",grade:"filmic S-curve"}},
+];
+const tg=document.getElementById('tplGrid');
+tpls.forEach((t,i)=>{const c=document.createElement('div');c.className='tpl-card';c.innerHTML=`<div class="tn">${t.n}</div><div class="td">${t.d}</div><span class="tpl-tag ${t.tag}">${t.tag}</span>`;c.onclick=()=>{Object.entries(t.s).forEach(([id,val])=>{const el=document.getElementById(id);if(el&&!el.disabled){const opt=Array.from(el.options).find(o=>o.value===val);if(opt)el.value=val}});gen();toast('Template applied ✓')};tg.appendChild(c)});
+
+/* ===== RE ===== */
+function copyRE(){navigator.clipboard.writeText(document.getElementById('rePromptText').textContent).then(()=>toast('RE Prompt copied ✓'))}
+function analyzeRE(){
+  const inp=document.getElementById('rePaste').value.trim();if(!inp){toast('Paste analysis first');return}
+  const btn=document.getElementById('reBtn');btn.classList.add('analyzing');btn.textContent='⏳...';
+  setTimeout(()=>{const p=parseRE(inp);applyRE(p);btn.classList.remove('analyzing');btn.textContent='🔍 Analyze & Auto-Fill';const ks=Object.keys(p);document.getElementById('reResult').innerHTML=`<div style="background:var(--group-bg);border:1px solid var(--border);border-radius:6px;padding:8px;font-size:10px;color:var(--text-muted)"><span style="color:var(--ok)">✓ ${ks.length} vars parsed</span></div>`;document.getElementById('reResult').style.display='block';gen();toast('Auto-fill ✓')},400);
+}
+function parseRE(t){const r={};t.split('\n').forEach(l=>{const m=l.match(/^([A-Z_]+)\s*:\s*(.+)$/);if(m)r[m[1].trim()]=m[2].trim().replace(/^\[|\]$/g,'').trim()});return r}
+const reMap={PHOTOGRAPHY_GENRE:'pfxGenre',CAMERA_FORMAT:'pfxCam',ART_DIRECTION:'pfxArt',BRAND_INDUSTRY:'brandIndustry',SUBJECT_TYPE:'subjectType',SUBJECT_AGE:'subjectAge',SUBJECT_BUILD:'subjectBuild',SUBJECT_HAIR:'subjectHair',FACIAL_EXPRESSION:'expression',MICRO_EXPRESSION:'microExpr',EYE_INTENSITY:'eyeIntensity',EMOTION_CORE:'emotionCore',POWER_LEVEL:'power',ARCHETYPE:'archetype',ENVIRONMENT:'environment',ATMOSPHERE:'atmosphere',FRAME_DENSITY:'frameDensity',WARDROBE:'wardrobe',WARDROBE_DETAIL:'wardrobeDetail',OUTERWEAR:'outerwear',ACCESSORIES:'accessories',ACTION_POSE:'action',HAND_POSITION:'hand',SUBJECT_FACING:'subjectFacing',GAZE:'subjectFacing',MAKEUP:'makeup',MOTION_BLUR:'motionBlur',FOREGROUND_DISTANCE:'fgDist',BACKGROUND_DISTANCE:'bgDist',FRAMING_CROP:'framing',PALETTE:'palette',LIGHTING:'lighting',SHADOW:'shadow',WHITE_BALANCE:'wb',LENS:'lens',APERTURE:'aperture',CAMERA_ANGLE:'camAngle',SHOT_SIZE:'shotSize',COMPOSITION:'composition',RETOUCH:'retouch',COLOR_GRADE:'grade',RESOLUTION:'resolution',ASPECT_RATIO:'aspectRatio',SUBJECT_ETHNICITY:'ethnicity'};
+function fuz(a,b){if(a===b)return 1;const w=a.split(/[\s,]+/).filter(x=>x.length>2);if(!w.length)return 0;let m=0;w.forEach(x=>{if(b.includes(x))m++});return m/w.length}
+function applyRE(p){
+  if(p.SUBJECT_GENDER){setGn(p.SUBJECT_GENDER.toLowerCase().includes('female')?'female':'male')}
+  if(p.PEOPLE_COUNT){const v=p.PEOPLE_COUNT;if(v==='1'||v==='2')setPpl(v);else setPpl('3+')}
+  ['OUTFIT_HEX','BACKGROUND_HEX'].forEach(k=>{if(p[k]&&p[k]!=='not specified'){const hex=p[k].replace(/[^#0-9a-fA-F]/g,'');if(/^#?[0-9A-Fa-f]{6}$/.test(hex)){const h=hex.startsWith('#')?hex:'#'+hex;const map={OUTFIT_HEX:'OP',BACKGROUND_HEX:'BG'};const n=map[k];if(n){document.getElementById('col'+n).value=h;document.getElementById('hex'+n).value=h;document.getElementById('use'+n).checked=true}}}});
+  for(const[rk,fid] of Object.entries(reMap)){if(!fid||!p[rk])continue;const val=p[rk];if(val==='none'||val==='not specified')continue;const el=document.getElementById(fid);if(!el||el.disabled)continue;
+    if(el.tagName==='TEXTAREA'){el.value=val;continue}
+    if(el.tagName==='SELECT'){const isC=val.toLowerCase().startsWith('custom:');const cv=isC?val.replace(/^custom:\s*/i,'').trim():val;const opts=Array.from(el.options).filter(o=>o.value&&o.value!=='custom');let best=null,bs=0;opts.forEach(o=>{const s=fuz(cv.toLowerCase(),o.value.toLowerCase());if(s>bs){bs=s;best=o}});
+      if(bs>.3&&!isC){el.value=best.value;el.classList.add('auto-filled')}
+      else{const hasC=Array.from(el.options).some(o=>o.value==='custom');if(hasC){el.value='custom';const cd=document.getElementById(fid+'C');if(cd){cd.classList.add('show');const inp=cd.querySelector('input');if(inp)inp.value=cv}}}
+    }
+  }
+}
+
+/* ===== PUPPET VIEWPORT ===== */
+let vpCanvas,vpCtx,joints={},dragJ=null,hoverJ=null;
+const JNAMES={head:'Head',neck:'Neck',shL:'Shoulder L',shR:'Shoulder R',elL:'Elbow L',elR:'Elbow R',haL:'Hand L',haR:'Hand R',hip:'Hip',hiL:'Hip L',hiR:'Hip R',knL:'Knee L',knR:'Knee R',ftL:'Foot L',ftR:'Foot R'};
+const BONES=[['head','neck'],['neck','shL'],['neck','shR'],['shL','elL'],['shR','elR'],['elL','haL'],['elR','haR'],['neck','hip'],['hip','hiL'],['hip','hiR'],['hiL','knL'],['hiR','knR'],['knL','ftL'],['knR','ftR']];
+const POSES={
+  tpose:{head:{x:.5,y:.1},neck:{x:.5,y:.17},shL:{x:.3,y:.21},shR:{x:.7,y:.21},elL:{x:.15,y:.21},elR:{x:.85,y:.21},haL:{x:.05,y:.21},haR:{x:.95,y:.21},hip:{x:.5,y:.44},hiL:{x:.43,y:.47},hiR:{x:.57,y:.47},knL:{x:.42,y:.62},knR:{x:.58,y:.62},ftL:{x:.41,y:.78},ftR:{x:.59,y:.78}},
+  stand:{head:{x:.5,y:.1},neck:{x:.5,y:.17},shL:{x:.37,y:.21},shR:{x:.63,y:.21},elL:{x:.33,y:.33},elR:{x:.67,y:.33},haL:{x:.35,y:.43},haR:{x:.65,y:.43},hip:{x:.5,y:.44},hiL:{x:.44,y:.47},hiR:{x:.56,y:.47},knL:{x:.43,y:.62},knR:{x:.57,y:.62},ftL:{x:.42,y:.78},ftR:{x:.58,y:.78}},
+  walk:{head:{x:.5,y:.1},neck:{x:.5,y:.17},shL:{x:.37,y:.21},shR:{x:.63,y:.21},elL:{x:.41,y:.32},elR:{x:.59,y:.32},haL:{x:.45,y:.41},haR:{x:.55,y:.41},hip:{x:.5,y:.44},hiL:{x:.44,y:.47},hiR:{x:.56,y:.47},knL:{x:.37,y:.60},knR:{x:.58,y:.64},ftL:{x:.33,y:.78},ftR:{x:.63,y:.78}},
+  sit:{head:{x:.5,y:.1},neck:{x:.5,y:.17},shL:{x:.37,y:.21},shR:{x:.63,y:.21},elL:{x:.31,y:.33},elR:{x:.69,y:.33},haL:{x:.33,y:.43},haR:{x:.67,y:.43},hip:{x:.5,y:.44},hiL:{x:.43,y:.47},hiR:{x:.57,y:.47},knL:{x:.33,y:.51},knR:{x:.67,y:.51},ftL:{x:.33,y:.65},ftR:{x:.67,y:.65}},
+  lean:{head:{x:.47,y:.1},neck:{x:.48,y:.17},shL:{x:.36,y:.22},shR:{x:.62,y:.20},elL:{x:.29,y:.33},elR:{x:.69,y:.29},haL:{x:.27,y:.43},haR:{x:.73,y:.37},hip:{x:.5,y:.44},hiL:{x:.44,y:.47},hiR:{x:.56,y:.47},knL:{x:.43,y:.62},knR:{x:.58,y:.60},ftL:{x:.42,y:.78},ftR:{x:.60,y:.76}},
+  crouch:{head:{x:.5,y:.2},neck:{x:.5,y:.27},shL:{x:.37,y:.31},shR:{x:.63,y:.31},elL:{x:.29,y:.39},elR:{x:.71,y:.39},haL:{x:.31,y:.49},haR:{x:.69,y:.49},hip:{x:.5,y:.47},hiL:{x:.43,y:.49},hiR:{x:.57,y:.49},knL:{x:.33,y:.55},knR:{x:.67,y:.55},ftL:{x:.37,y:.69},ftR:{x:.63,y:.69}},
+};
+function setPose(n){const p=POSES[n]||POSES.tpose;Object.keys(p).forEach(k=>{joints[k]={...p[k]}});vpDraw()}
+
+function initVP(){
+  vpCanvas=document.getElementById('vpCanvas');if(!vpCanvas)return;
+  const w=vpCanvas.parentElement;const dpr=window.devicePixelRatio||1;
+  vpCanvas.width=w.clientWidth*dpr;vpCanvas.height=w.clientHeight*dpr;
+  vpCanvas.style.width=w.clientWidth+'px';vpCanvas.style.height=w.clientHeight+'px';
+  vpCtx=vpCanvas.getContext('2d');vpCtx.scale(dpr,dpr);
+  setPose('tpose');
+  vpCanvas.addEventListener('pointerdown',e=>{const p=cPos(e);dragJ=findJ(p);if(dragJ)vpCanvas.setPointerCapture(e.pointerId)});
+  vpCanvas.addEventListener('pointermove',e=>{const p=cPos(e);if(dragJ){joints[dragJ].x=Math.max(.02,Math.min(.98,p.x));joints[dragJ].y=Math.max(.02,Math.min(.98,p.y));vpDraw()}else{const h=findJ(p);if(h!==hoverJ){hoverJ=h;const l=document.getElementById('vpJointLbl');if(h){l.textContent=JNAMES[h];const r=vpCanvas.getBoundingClientRect();l.style.left=(joints[h].x*r.width+8)+'px';l.style.top=(joints[h].y*r.height-12)+'px';l.style.display='block'}else l.style.display='none';vpCanvas.style.cursor=h?'grab':'default';vpDraw()}}});
+  vpCanvas.addEventListener('pointerup',e=>{if(dragJ){vpCanvas.releasePointerCapture(e.pointerId);dragJ=null;vpCanvas.style.cursor='default'}});
+  vpCanvas.addEventListener('pointerleave',()=>{dragJ=null;hoverJ=null;document.getElementById('vpJointLbl').style.display='none';vpDraw()});
+  vpDraw();
+}
+function cPos(e){const r=vpCanvas.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height}}
+function findJ(p,t){t=t||.035;let c=null,m=Infinity;for(const[n,j] of Object.entries(joints)){const d=Math.hypot(j.x-p.x,j.y-p.y);if(d<t&&d<m){m=d;c=n}}return c}
+
+function vpDraw(){
+  if(!vpCtx||!vpCanvas)return;const c=vpCtx,W=vpCanvas.clientWidth,H=vpCanvas.clientHeight;
+  const dk=document.documentElement.getAttribute('data-theme')!=='light';
+  c.fillStyle=dk?'#0d0d14':'#e8e8e0';c.fillRect(0,0,W,H);
+  // Grid
+  c.strokeStyle=dk?'#1a1a2a':'#d0d0c8';c.lineWidth=.5;const gy=H*.82;
+  for(let i=0;i<20;i++){const x=i*(W/19);c.beginPath();c.moveTo(x,gy);c.lineTo(x,H);c.stroke()}
+  for(let i=0;i<6;i++){const y=gy+i*((H-gy)/5);c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke()}
+  // Bones
+  c.lineCap='round';const fc=dk?'#7c6aff':'#5b46e0',jc=dk?'#e8d84a':'#9e8c10',hc2=dk?'#ff6b6b':'#e03030',dc=dk?'#4ade80':'#22a355';
+  c.strokeStyle=fc;c.lineWidth=2.5;
+  BONES.forEach(([a,b])=>{if(!joints[a]||!joints[b])return;c.beginPath();c.moveTo(joints[a].x*W,joints[a].y*H);c.lineTo(joints[b].x*W,joints[b].y*H);c.stroke()});
+  // Head
+  if(joints.head){const hx=joints.head.x*W,hy=joints.head.y*H;c.strokeStyle=fc;c.lineWidth=2;c.beginPath();c.arc(hx,hy,H*.04,0,Math.PI*2);c.stroke();c.fillStyle=jc;c.beginPath();c.arc(hx,hy-H*.015,2,0,Math.PI*2);c.fill()}
+  // Joints
+  for(const[n,j] of Object.entries(joints)){const jx=j.x*W,jy=j.y*H,r=n==='head'?5:n==='hip'?4:3.5;
+    c.fillStyle=n===dragJ?dc:n===hoverJ?hc2:jc;c.beginPath();c.arc(jx,jy,r,0,Math.PI*2);c.fill();
+    if(n===hoverJ||n===dragJ){c.strokeStyle=n===dragJ?dc:hc2;c.lineWidth=1.5;c.beginPath();c.arc(jx,jy,r+3,0,Math.PI*2);c.stroke()}}
+  // Camera
+  const ch=parseInt(document.getElementById('vpCamH').value)||0;
+  const camY=H*.45-ch*.3,camX=25;c.fillStyle=dk?'#6ee06b':'#2a8028';
+  c.beginPath();c.moveTo(camX+10,camY);c.lineTo(camX,camY-6);c.lineTo(camX,camY+6);c.closePath();c.fill();
+  c.fillRect(camX-10,camY-4,10,8);
+  c.fillStyle=dk?'rgba(110,224,107,.5)':'rgba(42,128,40,.5)';c.font='7px Manrope';c.textAlign='center';c.fillText('CAM',camX,camY+14);
+  // Frame
+  const shot=document.getElementById('vpShot').value;let ft=.05,fb=.85,fl=.15,fr=.85;
+  if(shot==='close-up'){ft=.02;fb=.35;fl=.3;fr=.7}else if(shot==='medium CU'){ft=.02;fb=.45;fl=.25;fr=.75}else if(shot==='waist up'){fb=.55}else if(shot==='long shot'){fl=.05;fr=.95;ft=0;fb=.9}
+  c.strokeStyle=dk?'rgba(255,255,255,.15)':'rgba(0,0,0,.12)';c.lineWidth=1.5;c.setLineDash([5,3]);c.strokeRect(fl*W,ft*H,(fr-fl)*W,(fb-ft)*H);c.setLineDash([]);
+  // Info
+  const pd=derivePose();c.fillStyle=dk?'rgba(255,255,255,.35)':'rgba(0,0,0,.3)';c.font='8px Manrope';c.textAlign='left';
+  c.fillText('Pose: '+pd.body,8,H-16);c.fillText('Head: '+pd.head,8,H-6);
+}
+function derivePose(){
+  const j=joints;let body='standing';
+  if(j.knL&&j.hiL){if(Math.abs(j.knL.y-j.hiL.y)<.08)body='crouching';else if(Math.abs(j.knL.x-j.knR.x)>.25)body='sitting';else if(Math.abs(j.ftL.y-j.ftR.y)>.06)body='walking'}
+  if(j.shL&&j.shR&&Math.abs(j.shL.y-j.shR.y)>.03)body='leaning';
+  if(j.haL&&j.shL&&Math.abs(j.haL.y-j.shL.y)<.04&&j.haL.x<.15)body='t-pose';
+  let head='facing camera';if(j.head&&j.neck){const dx=j.head.x-j.neck.x;if(dx<-.03)head='looking left';else if(dx>.03)head='looking right';if(j.head.y<j.neck.y-.08)head='looking up'}
+  return{body,head};
+}
+function vpUpdate(){
+  const ch=parseInt(document.getElementById('vpCamH').value);
+  const hl=[[-90,"Worm's eye"],[-30,'Low'],[0,'Eye level'],[30,'Slight high'],[90,"Bird's eye"]];
+  let cl='Eye level',md=999;hl.forEach(([k,v])=>{const d=Math.abs(k-ch);if(d<md){md=d;cl=v}});
+  document.getElementById('vpCamHV').textContent=cl;
+  document.getElementById('vpCamDV').textContent=document.getElementById('vpCamD').value;
+  vpDraw();
+}
+function vpAccept(){
+  const p=derivePose();
+  const pMap={'standing':'standing confidently','walking':'walking purposefully','sitting':'seated at desk','leaning':'leaning against wall','crouching':'crouching low','t-pose':'standing confidently'};
+  const hMap={'facing camera':'facing camera directly','looking left':'three-quarter left','looking right':'three-quarter right','looking up':'facing camera directly'};
+  const el=id=>document.getElementById(id);
+  if(pMap[p.body]){const o=Array.from(el('action').options).find(o=>o.value===pMap[p.body]);if(o)el('action').value=o.value}
+  if(hMap[p.head]){const o=Array.from(el('subjectFacing').options).find(o=>o.value===hMap[p.head]);if(o)el('subjectFacing').value=o.value}
+  const ch=parseInt(el('vpCamH').value);if(ch<-30)el('camAngle').value='low angle';else if(ch>30)el('camAngle').value='slight high';else el('camAngle').value='eye level';
+  const ss=el('vpShot').value;const ssM={'close-up':'close-up','medium CU':'medium CU','medium':'medium CU','waist up':'waist up','full body':'full body','long shot':'long shot'};
+  if(ssM[ss]){const o=Array.from(el('shotSize').options).find(o=>o.value===ssM[ss]);if(o)el('shotSize').value=o.value}
+  const info=document.getElementById('vpInfo');info.innerHTML=`✅ Applied: Pose→${p.body}, Head→${p.head}, Angle→${el('camAngle').value}, Shot→${el('shotSize').value}`;info.style.display='block';setTimeout(()=>info.style.display='none',4000);
+  gen();toast('Viewport applied ✓');
+}
+
+/* ===== CONFLICT DETECTION ===== */
+const CRULES=[
+  {a:'shotSize',b:'lens',ck:(a,b)=>(a.includes('close')||a.includes('CU'))&&b.includes('wide')?'Close-up + wide lens = facial distortion. Use 85mm+ for close-ups.':a.includes('full body')&&b.includes('135')?'Full body + telephoto needs very far distance.':null},
+  {a:'environment',b:'frameDensity',ck:(a,b)=>a.includes('studio')&&b.includes('environmental')?'Studio backdrop conflicts with environmental storytelling.':null},
+  {a:'retouch',b:'guardrails',ck:(a,b)=>a.includes('beauty')&&b.includes('no plastic')?'Beauty smooth retouch may create plastic skin vs photorealistic guardrail.':null},
+  {a:'composition',b:'frameDensity',ck:(a,b)=>a.includes('centered')&&b.includes('environmental')?'Centered composition clashes with environmental density.':null},
+  {a:'subjectFacing',b:'expression',ck:(a,b)=>a.includes('back')&&(b.includes('smile')||b.includes('laugh'))?'Back view makes face invisible — expression will be ignored.':null},
+  {a:'subjectFacing',b:'microExpr',ck:(a,b)=>a.includes('back')&&b?'Back view + micro-expression = invisible to camera.':null},
+  {a:'lighting',b:'environment',ck:(a,b)=>a.includes('softbox')&&b.includes('outdoor')?'Studio softbox in outdoor = contradictory.':a.includes('neon')&&b.includes('studio')&&b.includes('seamless')?'Neon gel rarely matches clean studio.':null},
+  {a:'fgDist',b:'bgDist',ck:(a,b)=>a.includes('very close')&&b.includes('very close')?'Both FG and BG very close = cramped depth.':null},
+  {a:'shadow',b:'lighting',ck:(a,b)=>a==='chiaroscuro'&&b.includes('high key')?'Chiaroscuro + high key are opposite approaches.':a.includes('low soft')&&b.includes('split')?'Low soft contradicts split lighting.':null},
+  {a:'grade',b:'palette',ck:(a,b)=>a==='B&W'&&b.includes('neon')?'B&W grade eliminates neon palette.':null},
+  {a:'motionBlur',b:'resolution',ck:(a,b)=>a.includes('heavy')&&b.includes('hyper')?'Heavy blur contradicts hyper detail.':null},
+  {a:'aperture',b:'bgDist',ck:(a,b)=>a.includes('f/8')&&b.includes('infinite')?'f/8 + infinite BG = no subject isolation.':null},
+  {a:'framing',b:'shotSize',ck:(a,b)=>a.includes('tight face')&&b.includes('full body')?'Tight face crop contradicts full body shot size.':a.includes('forehead')&&b.includes('full body')?'Forehead crop contradicts full body.':null},
+  {a:'hand',b:'action',ck:(a,b)=>a.includes('holding')&&b.includes('arms folded')?'Holding object conflicts with arms folded.':a.includes('through hair')&&b.includes('arms folded')?'Through hair conflicts with arms folded.':null},
+  {a:'makeup',b:'retouch',ck:(a,b)=>a.includes('heavy glam')&&b.includes('natural pore')?'Heavy glam makeup + natural pore retouch may conflict.':null},
+];
+function checkConflicts(){
+  const cs=[];CRULES.forEach(r=>{const va=gv(r.a),vb=gv(r.b);if(va&&vb){const m=r.ck(va,vb);if(m)cs.push({a:r.a,b:r.b,msg:m})}});
+  const area=document.getElementById('conflictArea'),list=document.getElementById('conflictList');
+  if(cs.length){area.style.display='block';list.innerHTML=cs.map(c=>`<div class="conflict-item">⚠ <strong>${c.a}</strong> ↔ <strong>${c.b}</strong>: ${c.msg}</div>`).join('')}else area.style.display='none';
+}
+
+/* ===== PROMPT GENERATION ===== */
+function gen(){
+  if(rawLock)return;const v=id=>gv(id),lines=[];
+  lines.push('=== PREFIX ===');
+  if(v('pfxGenre'))lines.push('Genre: '+v('pfxGenre'));
+  if(v('pfxCam'))lines.push('Camera Format: '+v('pfxCam'));
+  if(v('pfxArt'))lines.push('Art Direction: '+v('pfxArt'));
+  const pe=document.getElementById('pfxExtra').value.trim();if(pe)lines.push('Prefix Extra: '+pe);
+  if(v('brandIndustry')||v('brandUsage')||v('brandTone')){lines.push('');lines.push('=== BRAND ===');if(v('brandIndustry'))lines.push('Industry: '+v('brandIndustry'));if(v('brandUsage'))lines.push('Usage: '+v('brandUsage'));if(v('brandTone'))lines.push('Tone: '+v('brandTone'))}
+  lines.push('');lines.push('=== SCENE DESCRIPTION ===');
+  const gl=gender==='female'?'woman':'man';let pl='';if(pplCount==='2')pl='Two people, ';else if(pplCount==='3+')pl='Group, ';else if(pplCount==='custom')pl=(document.getElementById('pplCustVal').value.trim()||'group')+', ';
+  lines.push('Subject: '+pl+'A '+gl+(v('subjectType')?', '+v('subjectType'):'')+(v('subjectAge')?', '+v('subjectAge'):'')+(v('subjectBuild')?', '+v('subjectBuild'):''));
+  if(v('ethnicity'))lines.push('Ethnicity: '+v('ethnicity'));
+  if(v('subjectHair'))lines.push('Hair: '+v('subjectHair'));
+  if(v('subjectFacing'))lines.push('Facing: '+v('subjectFacing'));
+  if(v('expression'))lines.push('Expression: '+v('expression'));
+  if(v('microExpr'))lines.push('Micro-expression: '+v('microExpr'));
+  if(v('eyeIntensity'))lines.push('Eye Intensity: '+v('eyeIntensity'));
+  if(v('makeup'))lines.push('Makeup: '+v('makeup'));
+  if(v('wardrobe'))lines.push('Wardrobe: '+v('wardrobe'));
+  const wd=document.getElementById('wardrobeDetail').value.trim();if(wd)lines.push('Wardrobe Detail: '+wd);
+  if(v('outerwear'))lines.push('Outerwear: '+v('outerwear'));
+  if(v('accessories'))lines.push('Accessories: '+v('accessories'));
+  if(v('action'))lines.push('Action: '+v('action'));
+  if(v('hand'))lines.push('Hand: '+v('hand'));
+  if(v('emotionCore'))lines.push('Emotion: '+v('emotionCore'));
+  if(v('power'))lines.push('Power: '+v('power'));
+  if(v('archetype'))lines.push('Archetype: '+v('archetype'));
+  if(v('environment'))lines.push('Environment: '+v('environment'));
+  if(v('atmosphere'))lines.push('Atmosphere: '+v('atmosphere'));
+  if(v('frameDensity'))lines.push('Frame Density: '+v('frameDensity'));
+  if(v('motionBlur'))lines.push('Motion Blur: '+v('motionBlur'));
+  if(v('fgDist'))lines.push('Foreground Distance: '+v('fgDist'));
+  if(v('bgDist'))lines.push('Background Distance: '+v('bgDist'));
+  const pr=document.getElementById('props').value.trim();if(pr)lines.push('Props: '+pr);
+  const se=document.getElementById('sceneExtra').value.trim();if(se)lines.push('Scene Extra: '+se);
+  lines.push('');lines.push('=== SUFFIX ===');
+  if(v('palette'))lines.push('Palette: '+v('palette'));
+  const cs=getColors();if(cs.length)lines.push('Colors: '+cs.join(', '));
+  if(v('lighting'))lines.push('Lighting: '+v('lighting'));
+  if(v('shadow'))lines.push('Shadow: '+v('shadow'));
+  if(v('wb'))lines.push('White Balance: '+v('wb'));
+  if(v('lens'))lines.push('Lens: '+v('lens'));
+  if(v('aperture'))lines.push('Aperture: '+v('aperture'));
+  if(v('camAngle'))lines.push('Camera Angle: '+v('camAngle'));
+  if(v('shotSize'))lines.push('Shot Size: '+v('shotSize'));
+  if(v('composition'))lines.push('Composition: '+v('composition'));
+  if(v('framing'))lines.push('Framing: '+v('framing'));
+  if(v('retouch'))lines.push('Retouch: '+v('retouch'));
+  if(v('grade'))lines.push('Color Grade: '+v('grade'));
+  if(v('resolution'))lines.push('Resolution: '+v('resolution'));
+  if(v('guardrails'))lines.push('Guardrails: '+v('guardrails'));
+  if(v('aspectRatio'))lines.push('Aspect Ratio: '+v('aspectRatio'));
+  const sx=document.getElementById('sfxExtra').value.trim();if(sx)lines.push('Suffix Extra: '+sx);
+  const raw=lines.join('\n');document.getElementById('rawEdit').value=raw;
+  buildOut(raw);checkConflicts();
+}
+
+function buildOut(raw){
+  const sec={prefix:'',scene:'',suffix:'',brand:''};let cur='';
+  raw.split('\n').forEach(l=>{if(l.includes('=== PREFIX'))cur='prefix';else if(l.includes('=== BRAND'))cur='brand';else if(l.includes('=== SCENE'))cur='scene';else if(l.includes('=== SUFFIX'))cur='suffix';else if(l.trim())sec[cur]+=(sec[cur]?'\n':'')+l});
+  const flat=l=>l.split('\n').map(x=>x.replace(/^[^:]+:\s*/,'')).filter(Boolean).join(', ');
+  const pf=flat(sec.prefix),sc=flat(sec.scene),sf=flat(sec.suffix),br=flat(sec.brand);
+  const bx=br?` For ${br} brand photography.`:'';
+  const cg=`Generate a photorealistic image:\n\n**Style:** ${pf||'Professional photography'}\n\n**Scene:** ${sc}${bx}\n\n**Technical:** ${sf}\n\nIMPORTANT: Real photograph. Natural skin, realistic fabric. No text, watermarks, logos. Correct proportions.`;
+  document.getElementById('outChatgpt').textContent=cg;document.getElementById('outChatgpt').dataset.raw=cg;
+  const gm=`Professional photograph: ${[pf,sc,sf].filter(Boolean).join(', ')}${bx}\n\nPhotorealistic, magazine quality, no text, no watermark.`;
+  document.getElementById('outGemini').textContent=gm;document.getElementById('outGemini').dataset.raw=gm;
+  const mg=`${pf}, ${sc}, ${sf}${bx}\n\nUltra resolution, masterful photography, exceptional detail, volumetric lighting, award-winning.`;
+  document.getElementById('outMagnific').textContent=mg;document.getElementById('outMagnific').dataset.raw=mg;
+}
+
+/* ===== BIDIRECTIONAL RAW SYNC ===== */
+const RMAP={'Genre':'pfxGenre','Camera Format':'pfxCam','Art Direction':'pfxArt','Prefix Extra':'pfxExtra','Industry':'brandIndustry','Usage':'brandUsage','Tone':'brandTone','Ethnicity':'ethnicity','Hair':'subjectHair','Facing':'subjectFacing','Expression':'expression','Micro-expression':'microExpr','Eye Intensity':'eyeIntensity','Makeup':'makeup','Wardrobe':'wardrobe','Wardrobe Detail':'wardrobeDetail','Outerwear':'outerwear','Accessories':'accessories','Action':'action','Hand':'hand','Emotion':'emotionCore','Power':'power','Archetype':'archetype','Environment':'environment','Atmosphere':'atmosphere','Frame Density':'frameDensity','Motion Blur':'motionBlur','Foreground Distance':'fgDist','Background Distance':'bgDist','Props':'props','Scene Extra':'sceneExtra','Palette':'palette','Lighting':'lighting','Shadow':'shadow','White Balance':'wb','Lens':'lens','Aperture':'aperture','Camera Angle':'camAngle','Shot Size':'shotSize','Composition':'composition','Framing':'framing','Retouch':'retouch','Color Grade':'grade','Resolution':'resolution','Guardrails':'guardrails','Aspect Ratio':'aspectRatio','Suffix Extra':'sfxExtra'};
+function onRawEdit(){
+  rawLock=true;clearTimeout(window._rt);
+  window._rt=setTimeout(()=>{
+    const raw=document.getElementById('rawEdit').value;
+    raw.split('\n').forEach(line=>{const m=line.match(/^([^:=]+):\s*(.+)$/);if(!m)return;const lbl=m[1].trim(),val=m[2].trim();if(lbl==='Subject'||lbl==='Colors'||lbl.startsWith('==='))return;
+      const fid=RMAP[lbl];if(!fid)return;const el=document.getElementById(fid);if(!el||el.disabled)return;
+      if(el.tagName==='TEXTAREA'){el.value=val;return}
+      if(el.tagName==='SELECT'){const ex=Array.from(el.options).find(o=>o.value===val);if(ex){el.value=val;return}const opts=Array.from(el.options).filter(o=>o.value&&o.value!=='custom');let best=null,bs=0;opts.forEach(o=>{const s=fuz(val.toLowerCase(),o.value.toLowerCase());if(s>bs){bs=s;best=o}});if(bs>.4&&best)el.value=best.value}});
+    buildOut(raw);checkConflicts();rawLock=false;
+  },400);
+}
+
+/* ===== TABS ===== */
+function swTab(t){document.querySelectorAll('.out-tab').forEach(x=>x.classList.toggle('active',x.dataset.t===t));document.querySelectorAll('.out-pane').forEach(x=>x.classList.toggle('active',x.dataset.t===t))}
+
+/* ===== COPY ===== */
+function copyOut(t){let txt='';if(t==='raw')txt=document.getElementById('rawEdit').value;else{const el=document.getElementById('out'+t.charAt(0).toUpperCase()+t.slice(1));txt=el.dataset.raw||el.textContent}navigator.clipboard.writeText(txt).then(()=>toast(`Copied ✓`))}
+
+/* ===== SAVE TXT ===== */
+function saveTxt(platform){
+  let txt='';const ts=new Date().toISOString().slice(0,19).replace(/[T:]/g,'-');
+  if(!platform||platform==='raw')txt=document.getElementById('rawEdit').value;
+  else{const el=document.getElementById('out'+platform.charAt(0).toUpperCase()+platform.slice(1));txt=el.dataset.raw||el.textContent}
+  const blob=new Blob([txt],{type:'text/plain'});const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=`impromt-${platform||'raw'}-${ts}.txt`;a.click();URL.revokeObjectURL(a.href);toast('Saved ✓');
+}
+
+/* ===== TOAST ===== */
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
+
+/* ===== RESET ===== */
+function resetAll(){
+  document.querySelectorAll('select').forEach(s=>{s.selectedIndex=0;s.classList.remove('auto-filled');s.disabled=false});
+  document.querySelectorAll('textarea').forEach(t=>{t.value='';t.disabled=false});
+  document.querySelectorAll('.cust-inp').forEach(d=>d.classList.remove('show'));
+  document.querySelectorAll('.cust-inp input').forEach(i=>{i.value='';i.disabled=false});
+  document.querySelectorAll('.lock-btn').forEach(b=>{b.classList.remove('locked');b.textContent='🔓'});
+  setGn('male');setPpl('1');
+  ['pfxGenre:editorial portrait','pfxCam:full frame DSLR photorealistic','pfxArt:bold graphic high impact editorial','subjectAge:30s','power:balanced','palette:cool tech tone','lighting:soft editorial softbox','shadow:medium balanced','wb:neutral 5500K','lens:85mm flattering','aperture:f/2.0 shallow','camAngle:eye level','shotSize:medium CU','composition:rule of thirds','retouch:natural pore preserved','grade:clean commercial','resolution:sharp high detail'].forEach(p=>{const[id,val]=p.split(':');document.getElementById(id).value=val});
+  setPose('tpose');gen();toast('Reset ✓');
+}
+
+/* ===== INIT ===== */
+document.querySelectorAll('select').forEach(el=>el.addEventListener('change',()=>{gen();checkConflicts()}));
+document.querySelectorAll('textarea:not(.raw-edit):not(#rePaste)').forEach(el=>el.addEventListener('input',gen));
+gen();setTimeout(initVP,200);
+window.addEventListener('resize',()=>{if(vpCanvas){const w=vpCanvas.parentElement,dpr=window.devicePixelRatio||1;vpCanvas.width=w.clientWidth*dpr;vpCanvas.height=w.clientHeight*dpr;vpCanvas.style.width=w.clientWidth+'px';vpCanvas.style.height=w.clientHeight+'px';vpCtx=vpCanvas.getContext('2d');vpCtx.scale(dpr,dpr);vpDraw()}});
+</script>
+</body>
+</html>
