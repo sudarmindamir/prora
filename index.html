@@ -111,10 +111,10 @@ body.spotlight-active .footer {
   pointer-events: none;
 }
 
-/* ===== BOTTOM DOCK (FULLSCREEN SPOTLIGHT) ===== */
-.bottom-dock{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);width:calc(100% - 48px);max-width:1200px;background:hsl(var(--card)/0.85);backdrop-filter:blur(16px);border:1px solid hsl(var(--border));border-radius:16px;padding:20px;z-index:90;box-shadow:0 10px 40px -10px hsl(0 0% 0% / 0.15),0 0 0 1px hsl(var(--border)/0.5);display:flex;flex-direction:column;gap:12px;transition:all .3s cubic-bezier(0.4,0,0.2,1)}
-.bottom-dock:focus-within{background:hsl(var(--card));border-color:hsl(var(--ring)/0.3);box-shadow:0 15px 50px -10px hsl(0 0% 0% / 0.25)}
-.bottom-dock.dock-minimized{bottom:16px;width:320px;padding:12px 20px;cursor:pointer;border-color:hsl(var(--border));background:hsl(var(--card))}
+/* ===== BOTTOM DOCK (IDE TERMINAL & SPOTLIGHT) ===== */
+.bottom-dock{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;transition:all .3s cubic-bezier(0.4,0,0.2,1);width:100%}
+.bottom-dock:focus-within{border-color:hsl(var(--ring)/0.3);box-shadow:0 10px 30px -10px hsl(0 0% 0% / 0.15)}
+.bottom-dock.dock-minimized{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);width:320px;padding:12px 20px;cursor:pointer;z-index:90;border-color:hsl(var(--border));box-shadow:0 10px 40px -10px hsl(0 0% 0% / 0.2)}
 .bottom-dock.dock-minimized:hover{border-color:hsl(var(--ring)/0.5)}
 .bottom-dock.dock-minimized .dock-layout{display:none}
 .bottom-dock.dock-fullscreen{position:fixed;top:50%;left:50%;transform:translate(-50%, -50%);width:92vw;max-width:1300px;height:85vh;bottom:auto;border-radius:20px;border:1px solid hsl(var(--border));background:hsl(var(--card));z-index:1000;box-shadow:0 0 0 9999px hsl(0 0% 0% / 0.55),0 25px 60px -12px hsl(0 0% 0% / 0.4);overflow:hidden;padding:24px;display:flex;flex-direction:column}
@@ -122,6 +122,16 @@ body.spotlight-active .footer {
 .dock-fullscreen .dock-content{height:100%;display:flex;flex-direction:column;min-height:0}
 .dock-fullscreen .out-pane.active{height:100%;display:flex;flex-direction:column;min-height:0}
 .dock-fullscreen .raw-edit,.dock-fullscreen .out-box{flex:1;height:100%;min-height:200px;resize:vertical}
+/* ===== ANTIGRAVITY IDE LAYOUT ===== */
+.ide-wrapper{max-width:1680px;margin:0 auto;padding:16px 24px 60px;display:grid;grid-template-columns:310px 1fr 310px;gap:16px;align-items:start}
+@media(max-width:1180px){.ide-wrapper{display:flex;flex-direction:column}}
+.ide-col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.ide-center-top{display:flex;flex-direction:column;gap:16px;flex:1}
+
+/* Icon-Only Dock Buttons */
+.dock-btn-icon{background:transparent;border:1px solid hsl(var(--border));color:hsl(var(--muted-foreground));font-size:12px;width:28px;height:28px;border-radius:var(--radius);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .15s}
+.dock-btn-icon:hover{background:hsl(var(--accent));color:hsl(var(--foreground));border-color:hsl(var(--ring)/0.4)}
+
 .dock-btn{background:transparent;border:none;color:hsl(var(--muted-foreground));font-size:14px;cursor:pointer;padding:4px 8px;border-radius:var(--radius);transition:all .15s}
 .dock-btn:hover{background:hsl(var(--accent));color:hsl(var(--foreground))}
 .dock-min-preview{display:none;font-size:12px;color:hsl(var(--muted-foreground));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
@@ -274,33 +284,58 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
   </div>
 </header>
 
-<div class="bento-wrapper">
+<div class="ide-wrapper">
 
-<!-- BRAND -->
-<div class="bento-span-12" style="margin-bottom:8px">
-  <div style="font-size:15px;font-weight:700;margin-bottom:12px;letter-spacing:-0.3px;color:hsl(var(--foreground))">🏢 Brand Industry & Usage Context</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
-    <div class="fld"><label class="fld-lbl">Industry</label><select id="brandIndustry" onchange="hc(this,'brandIndustryC')"><option value="">— skip —</option><option value="artificial intelligence and technology">AI & Tech</option><option value="fashion and apparel">Fashion</option><option value="streetwear and urban culture">Streetwear</option><option value="luxury and premium goods">Luxury</option><option value="beauty and cosmetics">Beauty</option><option value="fitness and wellness">Fitness</option><option value="food and beverage">Food & Bev</option><option value="automotive and mobility">Automotive</option><option value="real estate and architecture">Real Estate</option><option value="finance and fintech">Finance</option><option value="healthcare and medical">Healthcare</option><option value="entertainment and media">Entertainment</option><option value="music and recording industry">Music</option><option value="sports and athletics">Sports</option><option value="travel and hospitality">Travel</option><option value="logistics and supply chain">Logistics</option><option value="gaming and esports">Gaming</option><option value="magazine and editorial publishing">Magazine</option><option value="e-commerce and retail">E-Commerce</option><option value="SaaS and software">SaaS</option><option value="crypto and web3">Crypto</option><option value="personal branding and coaching">Personal Brand</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="brandIndustryC"><input type="text" placeholder="Custom industry..." oninput="gen()"></div></div>
-    <div class="fld"><label class="fld-lbl">Usage</label><select id="brandUsage" onchange="hc(this,'brandUsageC')"><option value="">— skip —</option><option value="website hero banner">Website Hero</option><option value="social media content">Social Media</option><option value="magazine editorial spread">Magazine Editorial</option><option value="billboard and outdoor advertising">Billboard</option><option value="product packaging">Packaging</option><option value="pitch deck and presentation">Pitch Deck</option><option value="brand identity system">Brand Identity</option><option value="campaign lookbook">Lookbook</option><option value="app onboarding screens">App Onboarding</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="brandUsageC"><input type="text" oninput="gen()"></div></div>
-    <div class="fld"><label class="fld-lbl">Tone</label><select id="brandTone" onchange="hc(this,'brandToneC')"><option value="">— skip —</option><option value="corporate and authoritative">Corporate</option><option value="youthful and energetic">Youthful</option><option value="premium and exclusive">Premium</option><option value="edgy and disruptive">Edgy</option><option value="clean and minimal">Minimal</option><option value="futuristic and innovative">Futuristic</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="brandToneC"><input type="text" oninput="gen()"></div></div>
-  </div>
-</div>
-
-<!-- REVERSE ENGINEERING -->
-<div class="bento-card bento-span-12 collapse-section" style="border-color:hsl(var(--acc)/0.2)">
-  <div class="collapse-hdr" onclick="togCol(this)"><span>🔬 Reverse Engineering — Auto-Fill from Image Analysis</span><span class="collapse-arrow">▼</span></div>
-  <div class="collapse-body" id="reBody">
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
-      <div style="background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:14px"><div style="font-size:11px;font-weight:600;margin-bottom:4px">① Copy RE Prompt</div><div style="font-size:9px;color:hsl(var(--muted-foreground))">Copy the extraction prompt below.</div></div>
-      <div style="background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:14px"><div style="font-size:11px;font-weight:600;margin-bottom:4px">② Upload + Paste</div><div style="font-size:9px;color:hsl(var(--muted-foreground))">Upload image to ChatGPT/Gemini with prompt.</div></div>
-      <div style="background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:14px"><div style="font-size:11px;font-weight:600;margin-bottom:4px">③ Auto-Fill</div><div style="font-size:9px;color:hsl(var(--muted-foreground))">Paste result → variables auto-filled.</div></div>
+  <!-- LEFT COLUMN (IDE Explorer UI Metaphor) -->
+  <div class="ide-col ide-col-left">
+    <!-- Brand Industry & Usage Context -->
+    <div class="bento-card">
+      <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:hsl(var(--foreground))">🏢 Brand Industry & Context</div>
+      <div class="fld"><label class="fld-lbl">Industry</label><select id="brandIndustry" onchange="hc(this,'brandIndustryC')"><option value="">— skip —</option><option value="artificial intelligence and technology">AI & Tech</option><option value="fashion and apparel">Fashion</option><option value="streetwear and urban culture">Streetwear</option><option value="luxury and premium goods">Luxury</option><option value="beauty and cosmetics">Beauty</option><option value="fitness and wellness">Fitness</option><option value="food and beverage">Food & Bev</option><option value="automotive and mobility">Automotive</option><option value="real estate and architecture">Real Estate</option><option value="finance and fintech">Finance</option><option value="healthcare and medical">Healthcare</option><option value="entertainment and media">Entertainment</option><option value="music and recording industry">Music</option><option value="sports and athletics">Sports</option><option value="travel and hospitality">Travel</option><option value="logistics and supply chain">Logistics</option><option value="gaming and esports">Gaming</option><option value="magazine and editorial publishing">Magazine</option><option value="e-commerce and retail">E-Commerce</option><option value="SaaS and software">SaaS</option><option value="crypto and web3">Crypto</option><option value="personal branding and coaching">Personal Brand</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="brandIndustryC"><input type="text" placeholder="Custom industry..." oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Usage</label><select id="brandUsage" onchange="hc(this,'brandUsageC')"><option value="">— skip —</option><option value="website hero banner">Website Hero</option><option value="social media content">Social Media</option><option value="magazine editorial spread">Magazine Editorial</option><option value="billboard and outdoor advertising">Billboard</option><option value="product packaging">Packaging</option><option value="pitch deck and presentation">Pitch Deck</option><option value="brand identity system">Brand Identity</option><option value="campaign lookbook">Lookbook</option><option value="app onboarding screens">App Onboarding</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="brandUsageC"><input type="text" oninput="gen()"></div></div>
+      <div class="fld"><label class="fld-lbl">Tone</label><select id="brandTone" onchange="hc(this,'brandToneC')"><option value="">— skip —</option><option value="corporate and authoritative">Corporate</option><option value="youthful and energetic">Youthful</option><option value="premium and exclusive">Premium</option><option value="edgy and disruptive">Edgy</option><option value="clean and minimal">Minimal</option><option value="futuristic and innovative">Futuristic</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="brandToneC"><input type="text" oninput="gen()"></div></div>
     </div>
-    <div style="background:hsl(var(--prompt-bg));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:14px;margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <span style="font-size:11px;font-weight:600;color:hsl(var(--acc));text-transform:uppercase;letter-spacing:.08em">📋 RE Prompt</span>
-        <button class="btn-pri" style="flex:none;padding:4px 10px;font-size:10px" onclick="copyRE()">Copy</button>
+
+    <!-- Art Direction Templates (Snack) -->
+    <div class="bento-card collapse-section">
+      <div class="collapse-hdr" onclick="togCol(this)"><span>✨ Art Direction Templates</span><span class="collapse-arrow">▼</span></div>
+      <div class="collapse-body">
+        <div class="tpl-grid" id="tplGrid"></div>
       </div>
-      <div class="re-prompt-text" id="rePromptText">Analyze this image as a professional photography director. Extract ONLY the photographic and cinematographic qualities. 
+    </div>
+
+    <!-- Prefix Builder -->
+    <div class="bento-card side-col">
+      <div class="col-hdr"><span>Prefix Builder</span><span class="badge badge-pfx">Prefix</span></div>
+      <div class="blk blk-pfx" style="margin:0">
+        <div class="fld"><label class="fld-lbl">Genre</label><select id="pfxGenre" onchange="hc(this,'pfxGenreC')"><option value="">— skip —</option><option value="editorial portrait" selected>Editorial portrait</option><option value="corporate headshot">Corporate headshot</option><option value="environmental portrait">Environmental</option><option value="street documentary">Street documentary</option><option value="fashion editorial">Fashion editorial</option><option value="cyberpunk neon portrait">Cyberpunk neon</option><option value="high streetwear photography">High streetwear</option><option value="cinematic film still">Cinematic film</option><option value="film noir high contrast">Film noir</option><option value="beauty close-up">Beauty CU</option><option value="conceptual">Conceptual</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxGenreC"><input type="text" oninput="gen()"></div></div>
+        <div class="fld"><label class="fld-lbl">Camera</label><select id="pfxCam" onchange="hc(this,'pfxCamC')"><option value="">— skip —</option><option value="full frame DSLR photorealistic" selected>Full frame DSLR</option><option value="medium format high fidelity">Medium format</option><option value="35mm film analog grain">35mm film</option><option value="cinematic anamorphic">Anamorphic</option><option value="Hasselblad">Hasselblad</option><option value="Leica rangefinder">Leica</option><option value="RED 8K">RED 8K</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxCamC"><input type="text" oninput="gen()"></div></div>
+        <div class="fld"><label class="fld-lbl">Art Direction</label><select id="pfxArt" onchange="hc(this,'pfxArtC')"><option value="">— skip —</option><option value="quiet confidence understated luxury">Quiet confidence</option><option value="bold graphic high impact editorial" selected>Bold editorial</option><option value="warm human approachable">Warm approachable</option><option value="minimal precise engineered">Minimal precise</option><option value="raw documentary honesty">Raw documentary</option><option value="dark moody cinematic">Dark cinematic</option><option value="cyberpunk neon futurism">Cyberpunk neon</option><option value="high streetwear editorial">High streetwear</option><option value="Wes Anderson pastel symmetry">Wes Anderson</option><option value="Wong Kar-wai neon melancholy">Wong Kar-wai</option><option value="Blade Runner dystopian">Blade Runner</option><option value="film noir dramatic">Film noir</option><option value="vintage retro nostalgic">Vintage retro</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxArtC"><input type="text" oninput="gen()"></div></div>
+        <div class="fld"><label class="fld-lbl">Prefix Extra</label><textarea id="pfxExtra" placeholder="Extra style notes..." oninput="gen()"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTER COLUMN (IDE Main Editor & Terminal Panel Metaphor) -->
+  <div class="ide-col ide-col-center">
+    
+    <!-- TOP 70%: MAIN EDITOR AREA -->
+    <div class="ide-center-top">
+      <!-- Reverse Engineering -->
+      <div class="bento-card collapse-section" style="border-color:hsl(var(--acc)/0.2)">
+        <div class="collapse-hdr" onclick="togCol(this)"><span>🔬 Reverse Engineering — Image Analysis Auto-Fill</span><span class="collapse-arrow">▼</span></div>
+        <div class="collapse-body" id="reBody">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+            <div style="background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:10px"><div style="font-size:11px;font-weight:600">① Copy RE Prompt</div><div style="font-size:9px;color:hsl(var(--muted-foreground))">Copy extraction prompt.</div></div>
+            <div style="background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:10px"><div style="font-size:11px;font-weight:600">② Upload + Paste</div><div style="font-size:9px;color:hsl(var(--muted-foreground))">Upload image to AI with prompt.</div></div>
+            <div style="background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:10px"><div style="font-size:11px;font-weight:600">③ Auto-Fill</div><div style="font-size:9px;color:hsl(var(--muted-foreground))">Paste result → auto-filled.</div></div>
+          </div>
+          <div style="background:hsl(var(--prompt-bg));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:12px;margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <span style="font-size:11px;font-weight:600;color:hsl(var(--acc));text-transform:uppercase">📋 RE Prompt</span>
+              <button class="btn-pri" style="flex:none;padding:4px 10px;font-size:10px" onclick="copyRE()">Copy</button>
+            </div>
+            <div class="re-prompt-text" id="rePromptText">Analyze this image as a professional photography director. Extract ONLY the photographic and cinematographic qualities. 
 
 ⚠️ CRITICAL RULES:
 - COMPLETELY IGNORE any text, typography, logos, watermarks, graphic overlays, shapes, UI elements in the image
@@ -364,138 +399,181 @@ RESOLUTION: [sharp high detail / 8k ultra / hyper detailed / soft focus / CUSTOM
 ASPECT_RATIO: [1:1 / 4:5 / 3:4 / 9:16 / 16:9 / 2:3 / 3:2 / 21:9 / CUSTOM]
 
 Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEMENTS.</div>
-    </div>
-    <div><label class="fld-lbl" style="margin-bottom:4px;display:block">📥 Paste AI Result</label><textarea id="rePaste" style="min-height:80px;font-family:'JetBrains Mono',monospace;font-size:10px" placeholder="Paste ChatGPT/Gemini response here..."></textarea></div>
-    <div style="display:flex;gap:6px;margin-top:8px">
-      <button class="btn-pri" style="flex:none;padding:7px 16px" onclick="analyzeRE()" id="reBtn">🔍 Analyze & Auto-Fill</button>
-      <button class="btn-sec" style="flex:none;padding:7px 12px" onclick="document.getElementById('rePaste').value='';document.getElementById('reResult').style.display='none'">Clear</button>
-    </div>
-    <div id="reResult" style="margin-top:8px;display:none"></div>
-  </div>
-</div>
-
-<!-- TEMPLATES -->
-<div class="bento-card bento-span-12 collapse-section" style="margin:0">
-  <div class="collapse-hdr" onclick="togCol(this)"><span>✨ Art Direction Templates (Snack)</span><span class="collapse-arrow">▼</span></div>
-  <div class="collapse-body">
-    <div class="tpl-grid" id="tplGrid"></div>
-  </div>
-</div>
-
-<div class="bento-grid">
-
-  <!-- LEFT: PREFIX -->
-  <div class="bento-card bento-span-12 side-col" style="margin:0">
-    <div class="col-hdr" style="margin-bottom:12px"><span>Prefix Builder — Photographic Style & Opener</span><span class="badge badge-pfx">Prefix</span></div>
-    <div class="blk blk-pfx" style="margin:0">
-      <div class="prefix-grid">
-        <div class="fld"><label class="fld-lbl">Genre</label><select id="pfxGenre" onchange="hc(this,'pfxGenreC')"><option value="">— skip —</option><option value="editorial portrait" selected>Editorial portrait</option><option value="corporate headshot">Corporate headshot</option><option value="environmental portrait">Environmental</option><option value="street documentary">Street documentary</option><option value="fashion editorial">Fashion editorial</option><option value="cyberpunk neon portrait">Cyberpunk neon</option><option value="high streetwear photography">High streetwear</option><option value="cinematic film still">Cinematic film</option><option value="film noir high contrast">Film noir</option><option value="beauty close-up">Beauty CU</option><option value="conceptual">Conceptual</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxGenreC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">Camera</label><select id="pfxCam" onchange="hc(this,'pfxCamC')"><option value="">— skip —</option><option value="full frame DSLR photorealistic" selected>Full frame DSLR</option><option value="medium format high fidelity">Medium format</option><option value="35mm film analog grain">35mm film</option><option value="cinematic anamorphic">Anamorphic</option><option value="Hasselblad">Hasselblad</option><option value="Leica rangefinder">Leica</option><option value="RED 8K">RED 8K</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxCamC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">Art Direction</label><select id="pfxArt" onchange="hc(this,'pfxArtC')"><option value="">— skip —</option><option value="quiet confidence understated luxury">Quiet confidence</option><option value="bold graphic high impact editorial" selected>Bold editorial</option><option value="warm human approachable">Warm approachable</option><option value="minimal precise engineered">Minimal precise</option><option value="raw documentary honesty">Raw documentary</option><option value="dark moody cinematic">Dark cinematic</option><option value="cyberpunk neon futurism">Cyberpunk neon</option><option value="high streetwear editorial">High streetwear</option><option value="Wes Anderson pastel symmetry">Wes Anderson</option><option value="Wong Kar-wai neon melancholy">Wong Kar-wai</option><option value="Blade Runner dystopian">Blade Runner</option><option value="film noir dramatic">Film noir</option><option value="vintage retro nostalgic">Vintage retro</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxArtC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">Prefix Extra</label><textarea id="pfxExtra" placeholder="Extra style notes..." oninput="gen()"></textarea></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CENTER: SCENE DESCRIPTION -->
-  <div class="bento-card bento-span-12 scene-area" style="margin:0">
-    <div class="hdr">🎬 Scene Description <span class="badge badge-scn">Primary Editor</span></div>
-    <div class="sub">Core of the prompt — 6 detailed subject and environment cards structured in a 3-column bento grid.</div>
-    <div class="scene-grid">
-      <!-- Subject -->
-      <div class="sg"><div class="sg-title">👤 Subject</div>
-        <div class="fld"><label class="fld-lbl">People</label><div class="tog-grp" id="pplGrp"><button class="tog-btn active" data-v="1" onclick="setPpl('1')">1</button><button class="tog-btn" data-v="2" onclick="setPpl('2')">2</button><button class="tog-btn" data-v="3+" onclick="setPpl('3+')">3+</button><button class="tog-btn" data-v="custom" onclick="setPpl('custom')">✏️</button></div><div class="cust-inp" id="pplCust"><input type="text" id="pplCustVal" placeholder="e.g. crowd" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">Gender</label><div class="tog-grp" id="genGrp"><button class="tog-btn active" data-v="male" onclick="setGn('male')">♂ Male</button><button class="tog-btn" data-v="female" onclick="setGn('female')">♀ Female</button></div></div>
-        <div class="fld"><label class="fld-lbl">Ethnicity</label><select id="ethnicity" onchange="hc(this,'ethnicityC')"><option value="">— skip —</option><option value="East Asian features">East Asian</option><option value="Southeast Asian features">Southeast Asian</option><option value="South Asian features">South Asian</option><option value="Middle Eastern features">Middle Eastern</option><option value="African features dark skin">African</option><option value="African American features">African American</option><option value="European Caucasian features">European</option><option value="Latin American Hispanic features">Latin / Hispanic</option><option value="Scandinavian Nordic features">Scandinavian</option><option value="Mediterranean features olive skin">Mediterranean</option><option value="mixed ethnicity ambiguous features">Mixed</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="ethnicityC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">Type</label><select id="subjectType" onchange="hc(this,'subjectTypeC')"><option value="">— skip —</option><option value="professional">Professional</option><option value="young entrepreneur">Entrepreneur</option><option value="senior executive">Executive</option><option value="creative director">Creative Dir</option><option value="fashion model">Model</option><option value="athlete">Athlete</option><option value="street style icon">Street Style</option><option value="cyberpunk character">Cyberpunk</option><option value="musician">Musician</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="subjectTypeC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">Age</label><select id="subjectAge" onchange="hc(this,'subjectAgeC')"><option value="">— skip —</option><option value="early 20s">Early 20s</option><option value="late 20s">Late 20s</option><option value="30s" selected>30s</option><option value="40s">40s</option><option value="50s">50s</option><option value="60s+">60s+</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="subjectAgeC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">Build</label><select id="subjectBuild"><option value="">— skip —</option><option value="average">Average</option><option value="slim">Slim</option><option value="athletic">Athletic</option><option value="muscular">Muscular</option><option value="petite">Petite</option><option value="tall lean">Tall & Lean</option></select></div>
-        <div class="fld"><label class="fld-lbl">Hair</label><select id="subjectHair" onchange="hc(this,'subjectHairC')"><option value="">— skip —</option><option value="short dark">Short dark</option><option value="long blonde">Long blonde</option><option value="curly auburn">Curly auburn</option><option value="buzz cut">Buzz cut</option><option value="braided">Braided</option><option value="silver gray">Silver gray</option><option value="slicked back">Slicked back</option><option value="messy textured">Messy</option><option value="bald">Bald</option><option value="afro natural">Afro</option><option value="bob cut">Bob cut</option><option value="dyed vibrant">Dyed vibrant</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="subjectHairC"><input type="text" oninput="gen()"></div></div>
-      </div>
-
-      <!-- Face Detail -->
-      <div class="sg"><div class="sg-title">😤 Face Detail</div>
-        <div class="fld"><label class="fld-lbl">Facing Direction</label><select id="subjectFacing" onchange="hc(this,'subjectFacingC')"><option value="">— skip —</option><option value="facing camera directly">Facing camera</option><option value="three-quarter left">¾ Left</option><option value="three-quarter right">¾ Right</option><option value="profile left">Profile L</option><option value="profile right">Profile R</option><option value="back turned over shoulder">Over shoulder</option><option value="back view">Back view</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="subjectFacingC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">Expression</label><select id="expression" onchange="hc(this,'expressionC')"><option value="">— skip —</option><optgroup label="Strong"><option value="confident smile">Confident smile</option><option value="fierce determination">Fierce</option><option value="defiant stare">Defiant</option><option value="stoic dignified">Stoic</option></optgroup><optgroup label="Calm"><option value="serious contemplation">Contemplation</option><option value="calm neutral">Neutral</option><option value="pensive gaze">Pensive</option></optgroup><optgroup label="Warm"><option value="genuine laugh">Genuine laugh</option><option value="joyful radiant">Joyful</option><option value="playful grin">Playful</option><option value="subtle smirk">Subtle smirk</option></optgroup><optgroup label="Dark"><option value="mysterious enigmatic">Mysterious</option><option value="cold calculating">Cold</option><option value="brooding intensity">Brooding</option></optgroup><optgroup label="Raw"><option value="vulnerable raw emotion">Vulnerable</option><option value="melancholic sadness">Melancholic</option></optgroup><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="expressionC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">Micro-Expression</label><select id="microExpr" onchange="hc(this,'microExprC')"><option value="">— none —</option><option value="eyebrow raise">Eyebrow raise</option><option value="squinting">Squinting</option><option value="lip bite">Lip bite</option><option value="jaw clench">Jaw clench</option><option value="half smile">Half smile</option><option value="furrowed brow">Furrowed brow</option><option value="wide eyes">Wide eyes</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="microExprC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">Eye Intensity</label><select id="eyeIntensity"><option value="">— skip —</option><option value="soft warm gaze">Soft warm</option><option value="piercing sharp stare">Piercing</option><option value="dreamy unfocused">Dreamy</option><option value="cold calculating">Cold</option><option value="bright enthusiastic">Bright</option><option value="hooded mysterious">Hooded</option></select></div>
-        <div class="fld"><label class="fld-lbl">Makeup</label><select id="makeup" onchange="hc(this,'makeupC')"><option value="">— skip —</option><option value="natural minimal makeup">Natural minimal</option><option value="editorial bold makeup">Editorial bold</option><option value="smoky eye dramatic">Smoky eye</option><option value="dewy glow skin">Dewy glow</option><option value="no makeup bare face">No makeup</option><option value="heavy glam full coverage">Heavy glam</option><option value="theatrical artistic makeup">Theatrical</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="makeupC"><input type="text" oninput="gen()"></div></div>
-      </div>
-
-      <!-- Clothing & Outer -->
-      <div class="sg"><div class="sg-title">👔 Clothing & Outer</div>
-        <div class="fld"><label class="fld-lbl">Wardrobe</label><select id="wardrobe" onchange="hc(this,'wardrobeC')"><option value="">— skip —</option><option value="structured blazer">Blazer</option><option value="minimal modern">Minimal modern</option><option value="premium casual">Premium casual</option><option value="streetwear urban oversized">Streetwear</option><option value="high streetwear brands">High streetwear</option><option value="techwear cyberpunk">Techwear</option><option value="all black monochrome">All black</option><option value="vintage retro">Vintage retro</option><option value="evening formal">Evening formal</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="wardrobeC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">Wardrobe Detail</label><textarea id="wardrobeDetail" placeholder="e.g. navy blazer, white turtleneck" oninput="gen()"></textarea></div>
-        <div class="fld"><label class="fld-lbl">Outerwear</label><select id="outerwear" onchange="hc(this,'outerwearC')"><option value="">— none —</option><option value="leather jacket">Leather jacket</option><option value="denim jacket">Denim jacket</option><option value="trench coat">Trench coat</option><option value="bomber jacket">Bomber</option><option value="puffer jacket">Puffer</option><option value="blazer layered">Blazer</option><option value="oversized hoodie">Hoodie</option><option value="windbreaker">Windbreaker</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="outerwearC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">Accessories</label><select id="accessories" onchange="hc(this,'accessoriesC')"><option value="">— none —</option><option value="gold jewelry">Gold jewelry</option><option value="luxury watch">Watch</option><option value="sunglasses">Sunglasses</option><option value="chain necklace">Chain</option><option value="headphones">Headphones</option><option value="bucket hat">Bucket hat</option><option value="rings">Rings</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="accessoriesC"><input type="text" oninput="gen()"></div></div>
-      </div>
-
-      <!-- Body & Action -->
-      <div class="sg"><div class="sg-title">🎬 Body & Action</div>
-        <div class="fld"><label class="fld-lbl">Action / Pose</label><select id="action" onchange="hc(this,'actionC')"><option value="">— skip —</option><option value="standing confidently">Standing</option><option value="seated at desk">Seated</option><option value="walking purposefully">Walking</option><option value="leaning against wall">Leaning</option><option value="arms folded">Arms folded</option><option value="hands in pockets">Hands in pockets</option><option value="crouching low">Crouching</option><option value="jumping mid-air">Jumping</option><option value="running in motion">Running</option><option value="contrapposto stance">Contrapposto</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="actionC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">Hand Position</label><select id="hand" onchange="hc(this,'handC')"><option value="">— skip —</option><option value="relaxed at side">Relaxed side</option><option value="one in pocket">Pocket</option><option value="arms crossed">Crossed</option><option value="holding object">Holding object</option><option value="touching face">Touching face</option><option value="gesturing">Gesturing</option><option value="through hair">Through hair</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="handC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">Emotion Core</label><select id="emotionCore"><option value="">— skip —</option><option value="calm authority">Calm authority</option><option value="secure confident">Confident</option><option value="innovative leader">Innovative</option><option value="visionary">Visionary</option><option value="rebellious">Rebellious</option><option value="mysterious">Mysterious</option><option value="empowered">Empowered</option></select></div>
-        <div class="fld"><label class="fld-lbl">Power</label><select id="power"><option value="">— —</option><option value="soft">Soft</option><option value="balanced" selected>Balanced</option><option value="dominant">Dominant</option></select></div>
-        <div class="fld"><label class="fld-lbl">Archetype</label><select id="archetype" onchange="hc(this,'archetypeC')"><option value="">— skip —</option><option value="innovator">Innovator</option><option value="leader">Leader</option><option value="creator">Creator</option><option value="strategist">Strategist</option><option value="rebel">Rebel</option><option value="sage">Sage</option><option value="explorer">Explorer</option><option value="outlaw">Outlaw</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="archetypeC"><input type="text" oninput="gen()"></div></div>
-      </div>
-
-      <!-- Setting -->
-      <div class="sg"><div class="sg-title">🏙️ Setting & Mood</div>
-        <div class="fld"><label class="fld-lbl">Environment</label><select id="environment" onchange="hc(this,'environmentC')"><option value="">— skip —</option><option value="clean studio seamless backdrop">Studio</option><option value="modern interior glass concrete">Modern interior</option><option value="urban street">Urban street</option><option value="corporate office">Corporate office</option><option value="industrial concrete steel">Industrial</option><option value="outdoor natural">Outdoor natural</option><option value="neon-lit city night rain-soaked">Neon city night</option><option value="dark alley atmospheric">Dark alley</option><option value="abandoned warehouse">Warehouse</option><option value="luxury penthouse">Penthouse</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="environmentC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">Atmosphere</label><select id="atmosphere" onchange="hc(this,'atmosphereC')"><option value="">— skip —</option><option value="premium">Premium</option><option value="dynamic energetic">Dynamic</option><option value="calm composed">Calm</option><option value="mysterious brooding">Mysterious</option><option value="tense dramatic">Tense</option><option value="gritty raw">Gritty</option><option value="nostalgic warm">Nostalgic</option><option value="futuristic">Futuristic</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="atmosphereC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">Frame Density</label><select id="frameDensity" onchange="hc(this,'frameDensityC')"><option value="">— skip —</option><option value="minimal isolated">Minimal</option><option value="balanced">Balanced</option><option value="environmental storytelling">Environmental</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="frameDensityC"><input type="text" oninput="gen()"></div></div>
-      </div>
-
-      <!-- Motion & Depth -->
-      <div class="sg"><div class="sg-title">💨 Motion & Depth</div>
-        <div class="fld"><label class="fld-lbl">Motion Blur</label><select id="motionBlur" onchange="hc(this,'motionBlurC')"><option value="">— none —</option><option value="slight subject motion blur">Slight subject</option><option value="heavy subject motion blur">Heavy subject</option><option value="background motion blur panning">BG panning</option><option value="foreground motion blur">FG blur</option><option value="radial zoom blur">Radial zoom</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="motionBlurC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">FG Distance</label><select id="fgDist" onchange="hc(this,'fgDistC')"><option value="">— skip —</option><option value="very close touching lens">Very close</option><option value="close 0.5m">Close 0.5m</option><option value="medium 1-2m">Medium</option><option value="far 3m+">Far</option><option value="none">None</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="fgDistC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">BG Distance</label><select id="bgDist" onchange="hc(this,'bgDistC')"><option value="">— skip —</option><option value="very close 1m">Close 1m</option><option value="medium 3-5m">Medium</option><option value="far 10m+">Far</option><option value="infinite horizon">Infinite</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="bgDistC"><input type="text" oninput="gen()"></div></div>
-        <div class="fld"><label class="fld-lbl">Props</label><textarea id="props" placeholder="e.g. skateboard, neon sign" oninput="gen()"></textarea></div>
-        <div class="fld"><label class="fld-lbl">Scene Extra</label><textarea id="sceneExtra" placeholder="Weather, time, narrative..." oninput="gen()"></textarea></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- PUPPET VIEWPORT -->
-  <div class="bento-card bento-span-12 viewport-container" style="margin:0">
-    <div class="viewport-header" onclick="togCol(this)"><span style="font-size:14px;font-weight:600">📐 Puppet Rigging & Camera — Drag Joints to Pose</span><span class="collapse-arrow">▼</span></div>
-    <div class="viewport-body" id="vpBody">
-      <div style="font-size:11px;color:hsl(var(--muted-foreground));margin-bottom:12px">🖱️ Click & drag yellow joints. Use presets or camera sliders. Click Accept to apply.</div>
-      <div style="display:grid;grid-template-columns:1fr 180px;gap:12px;align-items:start">
-        <div class="vp-canvas-wrap" style="position:relative"><canvas id="vpCanvas"></canvas>
-          <div id="vpJointLbl" style="display:none;position:absolute;background:hsl(var(--primary));color:hsl(var(--primary-foreground));padding:4px 8px;border-radius:calc(var(--radius) - 2px);font-size:10px;font-weight:600;pointer-events:none;white-space:nowrap"></div>
+          </div>
+          <div><label class="fld-lbl" style="margin-bottom:4px;display:block">📥 Paste AI Result</label><textarea id="rePaste" style="min-height:70px;font-family:'JetBrains Mono',monospace;font-size:10px" placeholder="Paste ChatGPT/Gemini response here..."></textarea></div>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button class="btn-pri" style="flex:none;padding:6px 14px" onclick="analyzeRE()" id="reBtn">🔍 Analyze & Auto-Fill</button>
+            <button class="btn-sec" style="flex:none;padding:6px 10px" onclick="document.getElementById('rePaste').value='';document.getElementById('reResult').style.display='none'">Clear</button>
+          </div>
+          <div id="reResult" style="margin-top:8px;display:none"></div>
         </div>
-        <div>
-          <div style="font-size:11px;font-weight:700;color:hsl(var(--muted-foreground));text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;border-bottom:1px solid hsl(var(--border));padding-bottom:6px">Camera</div>
-          <div class="vp-ctrl"><label>Height</label><input type="range" id="vpCamH" min="-90" max="90" value="0" oninput="vpUpdate()"><span id="vpCamHV" style="font-size:10px;color:hsl(var(--muted-foreground))">Eye level</span></div>
-          <div class="vp-ctrl"><label>Distance</label><input type="range" id="vpCamD" min="50" max="300" value="150" oninput="vpUpdate()"><span id="vpCamDV" style="font-size:10px;color:hsl(var(--muted-foreground))">150</span></div>
-          <div class="vp-ctrl"><label>Shot</label><select id="vpShot" onchange="vpUpdate()" style="font-size:11px"><option value="medium">Medium</option><option value="close-up">Close-up</option><option value="medium CU">Med CU</option><option value="waist up">Waist up</option><option value="full body">Full body</option><option value="long shot">Long</option></select></div>
-          <div style="font-size:11px;font-weight:700;color:hsl(var(--muted-foreground));text-transform:uppercase;margin:12px 0 8px;border-bottom:1px solid hsl(var(--border));padding-bottom:6px">Pose Presets</div>
-          <div style="display:flex;flex-wrap:wrap;gap:4px" id="posePresets">
-            <button class="tog-btn" style="font-size:10px;padding:4px 8px;flex:none" onclick="setPose('tpose')">T-Pose</button>
-            <button class="tog-btn" style="font-size:10px;padding:4px 8px;flex:none" onclick="setPose('stand')">Stand</button>
-            <button class="tog-btn" style="font-size:10px;padding:4px 8px;flex:none" onclick="setPose('walk')">Walk</button>
-            <button class="tog-btn" style="font-size:10px;padding:4px 8px;flex:none" onclick="setPose('sit')">Sit</button>
-            <button class="tog-btn" style="font-size:10px;padding:4px 8px;flex:none" onclick="setPose('lean')">Lean</button>
-            <button class="tog-btn" style="font-size:10px;padding:4px 8px;flex:none" onclick="setPose('crouch')">Crouch</button>
+      </div>
+
+      <!-- Scene Description (3x2 Grid) -->
+      <div class="bento-card scene-area">
+        <div class="hdr">🎬 Scene Description <span class="badge badge-scn">Primary Editor</span></div>
+        <div class="sub">Core of the prompt — 6 detailed subject and environment cards.</div>
+        <div class="scene-grid">
+          <!-- Subject -->
+          <div class="sg"><div class="sg-title">👤 Subject</div>
+            <div class="fld"><label class="fld-lbl">People</label><div class="tog-grp" id="pplGrp"><button class="tog-btn active" data-v="1" onclick="setPpl('1')">1</button><button class="tog-btn" data-v="2" onclick="setPpl('2')">2</button><button class="tog-btn" data-v="3+" onclick="setPpl('3+')">3+</button><button class="tog-btn" data-v="custom" onclick="setPpl('custom')">✏️</button></div><div class="cust-inp" id="pplCust"><input type="text" id="pplCustVal" placeholder="e.g. crowd" oninput="gen()"></div></div>
+            <div class="fld"><label class="fld-lbl">Gender</label><div class="tog-grp" id="genGrp"><button class="tog-btn active" data-v="male" onclick="setGn('male')">♂ Male</button><button class="tog-btn" data-v="female" onclick="setGn('female')">♀ Female</button></div></div>
+            <div class="fld"><label class="fld-lbl">Ethnicity</label><select id="ethnicity" onchange="hc(this,'ethnicityC')"><option value="">— skip —</option><option value="East Asian features">East Asian</option><option value="Southeast Asian features">Southeast Asian</option><option value="South Asian features">South Asian</option><option value="Middle Eastern features">Middle Eastern</option><option value="African features dark skin">African</option><option value="African American features">African American</option><option value="European Caucasian features">European</option><option value="Latin American Hispanic features">Latin / Hispanic</option><option value="Scandinavian Nordic features">Scandinavian</option><option value="Mediterranean features olive skin">Mediterranean</option><option value="mixed ethnicity ambiguous features">Mixed</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="ethnicityC"><input type="text" oninput="gen()"></div></div>
+            <div class="fld"><label class="fld-lbl">Type</label><select id="subjectType" onchange="hc(this,'subjectTypeC')"><option value="">— skip —</option><option value="professional">Professional</option><option value="young entrepreneur">Entrepreneur</option><option value="senior executive">Executive</option><option value="creative director">Creative Dir</option><option value="fashion model">Model</option><option value="athlete">Athlete</option><option value="street style icon">Street Style</option><option value="cyberpunk character">Cyberpunk</option><option value="musician">Musician</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="subjectTypeC"><input type="text" oninput="gen()"></div></div>
+            <div class="fld"><label class="fld-lbl">Age</label><select id="subjectAge" onchange="hc(this,'subjectAgeC')"><option value="">— skip —</option><option value="early 20s">Early 20s</option><option value="late 20s">Late 20s</option><option value="30s" selected>30s</option><option value="40s">40s</option><option value="50s">50s</option><option value="60s+">60s+</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="subjectAgeC"><input type="text" oninput="gen()"></div></div>
+            <div class="fld"><label class="fld-lbl">Build</label><select id="subjectBuild"><option value="">— skip —</option><option value="average">Average</option><option value="slim">Slim</option><option value="athletic">Athletic</option><option value="muscular">Muscular</option><option value="petite">Petite</option><option value="tall lean">Tall & Lean</option></select></div>
+            <div class="fld"><label class="fld-lbl">Hair</label><select id="subjectHair" onchange="hc(this,'subjectHairC')"><option value="">— skip —</option><option value="short dark">Short dark</option><option value="long blonde">Long blonde</option><option value="curly auburn">Curly auburn</option><option value="buzz cut">Buzz cut</option><option value="braided">Braided</option><option value="silver gray">Silver gray</option><option value="slicked back">Slicked back</option><option value="messy textured">Messy</option><option value="bald">Bald</option><option value="afro natural">Afro</option><option value="bob cut">Bob cut</option><option value="dyed vibrant">Dyed vibrant</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="subjectHairC"><input type="text" oninput="gen()"></div></div>
+          </div>
+
+          <!-- Face Detail -->
+          <div class="sg"><div class="sg-title">😤 Face Detail</div>
+            <div class="fld"><label class="fld-lbl">Facing Direction</label><select id="subjectFacing" onchange="hc(this,'subjectFacingC')"><option value="">— skip —</option><option value="facing camera directly">Facing camera</option><option value="three-quarter left">¾ Left</option><option value="three-quarter right">¾ Right</option><option value="profile left">Profile L</option><option value="profile right">Profile R</option><option value="back turned over shoulder">Over shoulder</option><option value="back view">Back view</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="subjectFacingC"><input type="text" oninput="gen()"></div></div>
+            <div class="fld"><label class="fld-lbl">Expression</label><select id="expression" onchange="hc(this,'expressionC')"><option value="">— skip —</option><optgroup label="Strong"><option value="confident smile">Confident smile</option><option value="fierce determination">Fierce</option><option value="defiant stare">Defiant</option><option value="stoic dignified">Stoic</option></optgroup><optgroup label="Calm"><option value="serious contemplation">Contemplation</option><option value="calm neutral">Neutral</option><option value="pensive gaze">Pensive</option></optgroup><optgroup label="Warm"><option value="genuine laugh">Genuine laugh</option><option value="joyful radiant">Joyful</option><option value="playful grin">Playful</option><option value="subtle smirk">Subtle smirk</option></optgroup><optgroup label="Dark"><option value="mysterious enigmatic">Mysterious</option><option value="cold calculating">Cold</option><option value="brooding intensity">Brooding</option></optgroup><optgroup label="Raw"><option value="vulnerable raw emotion">Vulnerable</option><option value="melancholic sadness">Melancholic</option></optgroup><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="expressionC"><input type="text" oninput="gen()"></div></div>
+            <div class="fld"><label class="fld-lbl">Micro-Expression</label><select id="microExpr" onchange="hc(this,'microExprC')"><option value="">— none —</option><option value="eyebrow raise">Eyebrow raise</option><option value="squinting">Squinting</option><option value="lip bite">Lip bite</option><option value="jaw clench">Jaw clench</option><option value="half smile">Half smile</option><option value="furrowed brow">Furrowed brow</option><option value="wide eyes">Wide eyes</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="microExprC"><input type="text" oninput="gen()"></div></div>
+            <div class="fld"><label class="fld-lbl">Eye Intensity</label><select id="eyeIntensity"><option value="">— skip —</option><option value="soft warm gaze">Soft warm</option><option value="piercing sharp stare">Piercing</option><option value="dreamy unfocused">Dreamy</option><option value="cold calculating">Cold</option><option value="bright enthusiastic">Bright</option><option value="hooded mysterious">Hooded</option></select></div>
+            <div class="fld"><label class="fld-lbl">Makeup</label><select id="makeup" onchange="hc(this,'makeupC')"><option value="">— skip —</option><option value="natural minimal makeup">Natural minimal</option><option value="editorial bold makeup">Editorial bold</option><option value="smoky eye dramatic">Smoky eye</option><option value="dewy glow skin">Dewy glow</option><option value="no makeup bare face">No makeup</option><option value="heavy glam full coverage">Heavy glam</option><option value="theatrical artistic makeup">Theatrical</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="makeupC"><input type="text" oninput="gen()"></div></div>
+          </div>
+
+          <!-- Clothing & Outer -->
+          <div class="sg"><div class="sg-title">👔 Clothing & Outer</div>
+            <div class="fld"><label class="fld-lbl">Wardrobe</label><select id="wardrobe" onchange="hc(this,'wardrobeC')"><option value="">— skip —</option><option value="structured blazer">Blazer</option><option value="minimal modern">Minimal modern</option><option value="premium casual">Premium casual</option><option value="streetwear urban oversized">Streetwear</option><option value="high streetwear brands">High streetwear</option><option value="techwear cyberpunk">Techwear</option><option value="all black monochrome">All black</option><option value="vintage retro">Vintage retro</option><option value="evening formal">Evening formal</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="wardrobeC"><input type="text" oninput="gen()"></div></div>
+            <div class="fld"><label class="fld-lbl">Wardrobe Detail</label><textarea id="wardrobeDetail" placeholder="e.g. navy blazer, white turtleneck" oninput="gen()"></textarea></div>
+            <div class="fld"><label class="fld-lbl">Outerwear</label><select id="outerwear" onchange="hc(this,'outerwearC')"><option value="">— none —</option><option value="leather jacket">Leather jacket</option><option value="denim jacket">Denim jacket</option><option value="trench coat">Trench coat</option><option value="bomber jacket">Bomber</option><option value="puffer jacket">Puffer</option><option value="blazer layered">Blazer</option><option value="oversized hoodie">Hoodie</option><option value="windbreaker">Windbreaker</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="outerwearC"><input type="text" oninput="gen()"></div></div>
+            <div class="fld"><label class="fld-lbl">Accessories</label><select id="accessories" onchange="hc(this,'accessoriesC')"><option value="">— none —</option><option value="gold jewelry">Gold jewelry</option><option value="luxury watch">Watch</option><option value="sunglasses">Sunglasses</option><option value="chain necklace">Chain</option><option value="headphones">Headphones</option><option value="bucket hat">Bucket hat</option><option value="rings">Rings</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="accessoriesC"><input type="text" oninput="gen()"></div></div>
+          </div>
+
+          <!-- Body & Action -->
+          <div class="sg"><div class="sg-title">🎬 Body & Action</div>
+            <div class="fld"><label class="fld-lbl">Action / Pose</label><select id="action" onchange="hc(this,'actionC')"><option value="">— skip —</option><option value="standing confidently">Standing</option><option value="seated at desk">Seated</option><option value="walking purposefully">Walking</option><option value="leaning against wall">Leaning</option><option value="arms folded">Arms folded</option><option value="hands in pockets">Hands in pockets</option><option value="crouching low">Crouching</option><option value="jumping mid-air">Jumping</option><option value="running in motion">Running</option><option value="contrapposto stance">Contrapposto</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="actionC"><input type="text" oninput="gen()"></div></div>
+            <div class="fld"><label class="fld-lbl">Hand Position</label><select id="hand" onchange="hc(this,'handC')"><option value="">— skip —</option><option value="relaxed at side">Relaxed side</option><option value="one in pocket">Pocket</option><option value="arms crossed">Crossed</option><option value="holding object">Holding object</option><option value="touching face">Touching face</option><option value="gesturing">Gesturing</option><option value="through hair">Through hair</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="handC"><input type="text" oninput="gen()"></div></div>
+            <div class="fld"><label class="fld-lbl">Emotion Core</label><select id="emotionCore"><option value="">— skip —</option><option value="calm authority">Calm authority</option><option value="secure confident">Confident</option><option value="innovative leader">Innovative</option><option value="visionary">Visionary</option><option value="rebellious">Rebellious</option><option value="mysterious">Mysterious</option><option value="empowered">Empowered</option></select></div>
+            <div class="fld"><label class="fld-lbl">Power</label><select id="power"><option value="">— —</option><option value="soft">Soft</option><option value="balanced" selected>Balanced</option><option value="dominant">Dominant</option></select></div>
+            <div class="fld"><label class="fld-lbl">Archetype</label><select id="archetype" onchange="hc(this,'archetypeC')"><option value="">— skip —</option><option value="innovator">Innovator</option><option value="leader">Leader</option><option value="creator">Creator</option><option value="strategist">Strategist</option><option value="rebel">Rebel</option><option value="sage">Sage</option><option value="explorer">Explorer</option><option value="outlaw">Outlaw</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="archetypeC"><input type="text" oninput="gen()"></div></div>
+          </div>
+
+          <!-- Setting -->
+          <div class="sg"><div class="sg-title">🏙️ Setting & Mood</div>
+            <div class="fld"><label class="fld-lbl">Environment</label><select id="environment" onchange="hc(this,'environmentC')"><option value="">— skip —</option><option value="clean studio seamless backdrop">Studio</option><option value="modern interior glass concrete">Modern interior</option><option value="urban street">Urban street</option><option value="corporate office">Corporate office</option><option value="industrial concrete steel">Industrial</option><option value="outdoor natural">Outdoor natural</option><option value="neon-lit city night rain-soaked">Neon city night</option><option value="dark alley atmospheric">Dark alley</option><option value="abandoned warehouse">Warehouse</option><option value="luxury penthouse">Penthouse</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="environmentC"><input type="text" oninput="gen()"></div></div>
+            <div class="fld"><label class="fld-lbl">Atmosphere</label><select id="atmosphere" onchange="hc(this,'atmosphereC')"><option value="">— skip —</option><option value="premium">Premium</option><option value="dynamic energetic">Dynamic</option><option value="calm composed">Calm</option><option value="mysterious brooding">Mysterious</option><option value="tense dramatic">Tense</option><option value="gritty raw">Gritty</option><option value="nostalgic warm">Nostalgic</option><option value="futuristic">Futuristic</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="atmosphereC"><input type="text" oninput="gen()"></div></div>
+            <div class="fld"><label class="fld-lbl">Frame Density</label><select id="frameDensity" onchange="hc(this,'frameDensityC')"><option value="">— skip —</option><option value="minimal isolated">Minimal</option><option value="balanced">Balanced</option><option value="environmental storytelling">Environmental</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="frameDensityC"><input type="text" oninput="gen()"></div></div>
+          </div>
+
+          <!-- Motion & Depth -->
+          <div class="sg"><div class="sg-title">💨 Motion & Depth</div>
+            <div class="fld"><label class="fld-lbl">Motion Blur</label><select id="motionBlur" onchange="hc(this,'motionBlurC')"><option value="">— none —</option><option value="slight subject motion blur">Slight subject</option><option value="heavy subject motion blur">Heavy subject</option><option value="background motion blur panning">BG panning</option><option value="foreground motion blur">FG blur</option><option value="radial zoom blur">Radial zoom</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="motionBlurC"><input type="text" oninput="gen()"></div></div>
+            <div class="fld"><label class="fld-lbl">FG Distance</label><select id="fgDist" onchange="hc(this,'fgDistC')"><option value="">— skip —</option><option value="very close touching lens">Very close</option><option value="close 0.5m">Close 0.5m</option><option value="medium 1-2m">Medium</option><option value="far 3m+">Far</option><option value="none">None</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="fgDistC"><input type="text" oninput="gen()"></div></div>
+            <div class="fld"><label class="fld-lbl">BG Distance</label><select id="bgDist" onchange="hc(this,'bgDistC')"><option value="">— skip —</option><option value="very close 1m">Close 1m</option><option value="medium 3-5m">Medium</option><option value="far 10m+">Far</option><option value="infinite horizon">Infinite</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="bgDistC"><input type="text" oninput="gen()"></div></div>
+            <div class="fld"><label class="fld-lbl">Props</label><textarea id="props" placeholder="e.g. skateboard, neon sign" oninput="gen()"></textarea></div>
+            <div class="fld"><label class="fld-lbl">Scene Extra</label><textarea id="sceneExtra" placeholder="Weather, time, narrative..." oninput="gen()"></textarea></div>
           </div>
         </div>
       </div>
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button class="btn-pri" onclick="vpAccept()" style="flex:none;padding:7px 16px">✅ Accept & Apply</button>
-        <button class="btn-sec" onclick="setPose('tpose')" style="flex:none;padding:7px 12px">Reset</button>
+
+      <!-- Puppet Viewport (Collapsible) -->
+      <div class="bento-card viewport-container">
+        <div class="viewport-header" onclick="togCol(this)"><span style="font-size:14px;font-weight:600">📐 Puppet Rigging & Camera — Drag Joints to Pose</span><span class="collapse-arrow">▼</span></div>
+        <div class="viewport-body" id="vpBody">
+          <div style="font-size:11px;color:hsl(var(--muted-foreground));margin-bottom:12px">🖱️ Click & drag yellow joints. Use presets or camera sliders. Click Accept to apply.</div>
+          <div style="display:grid;grid-template-columns:1fr 180px;gap:12px;align-items:start">
+            <div class="vp-canvas-wrap" style="position:relative"><canvas id="vpCanvas"></canvas>
+              <div id="vpJointLbl" style="display:none;position:absolute;background:hsl(var(--primary));color:hsl(var(--primary-foreground));padding:4px 8px;border-radius:calc(var(--radius) - 2px);font-size:10px;font-weight:600;pointer-events:none;white-space:nowrap"></div>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:700;color:hsl(var(--muted-foreground));text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;border-bottom:1px solid hsl(var(--border));padding-bottom:6px">Camera</div>
+              <div class="vp-ctrl"><label>Height</label><input type="range" id="vpCamH" min="-90" max="90" value="0" oninput="vpUpdate()"><span id="vpCamHV" style="font-size:10px;color:hsl(var(--muted-foreground))">Eye level</span></div>
+              <div class="vp-ctrl"><label>Distance</label><input type="range" id="vpCamD" min="50" max="300" value="150" oninput="vpUpdate()"><span id="vpCamDV" style="font-size:10px;color:hsl(var(--muted-foreground))">150</span></div>
+              <div class="vp-ctrl"><label>Shot</label><select id="vpShot" onchange="vpUpdate()" style="font-size:11px"><option value="medium">Medium</option><option value="close-up">Close-up</option><option value="medium CU">Med CU</option><option value="waist up">Waist up</option><option value="full body">Full body</option><option value="long shot">Long</option></select></div>
+              <div style="font-size:11px;font-weight:700;color:hsl(var(--muted-foreground));text-transform:uppercase;margin:12px 0 8px;border-bottom:1px solid hsl(var(--border));padding-bottom:6px">Pose Presets</div>
+              <div style="display:flex;flex-wrap:wrap;gap:4px" id="posePresets">
+                <button class="tog-btn" style="font-size:10px;padding:4px 8px;flex:none" onclick="setPose('tpose')">T-Pose</button>
+                <button class="tog-btn" style="font-size:10px;padding:4px 8px;flex:none" onclick="setPose('stand')">Stand</button>
+                <button class="tog-btn" style="font-size:10px;padding:4px 8px;flex:none" onclick="setPose('walk')">Walk</button>
+                <button class="tog-btn" style="font-size:10px;padding:4px 8px;flex:none" onclick="setPose('sit')">Sit</button>
+                <button class="tog-btn" style="font-size:10px;padding:4px 8px;flex:none" onclick="setPose('lean')">Lean</button>
+                <button class="tog-btn" style="font-size:10px;padding:4px 8px;flex:none" onclick="setPose('crouch')">Crouch</button>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn-pri" onclick="vpAccept()" style="flex:none;padding:7px 16px">✅ Accept & Apply</button>
+            <button class="btn-sec" onclick="setPose('tpose')" style="flex:none;padding:7px 12px">Reset</button>
+          </div>
+          <div id="vpInfo" style="display:none;margin-top:10px;font-size:11px;color:hsl(var(--ok));background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:8px 12px"></div>
+        </div>
       </div>
-      <div id="vpInfo" style="display:none;margin-top:10px;font-size:11px;color:hsl(var(--ok));background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:8px 12px"></div>
+
+      <!-- Conflict Warnings -->
+      <div class="conflict-warn" id="conflictArea">
+        <div class="conflict-box">
+          <div style="font-size:10px;font-weight:700;color:hsl(var(--warn));margin-bottom:6px">⚠️ Potential Prompt Conflicts — fix in RAW Edit or adjust variables</div>
+          <div id="conflictList"></div>
+        </div>
+      </div>
     </div>
+
+    <!-- BOTTOM 30%: TERMINAL / FINAL PROMPT OUTPUT PANEL -->
+    <div class="bottom-dock" id="bottomDock">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px" onclick="if(document.getElementById('bottomDock').classList.contains('dock-minimized')) setDockState('standard')">
+        <span style="color:hsl(var(--foreground));font-weight:700;font-size:14px;letter-spacing:-0.3px">⚡ FINAL PROMPT OUTPUT</span>
+        <!-- ICON-ONLY CONTROLS -->
+        <div style="display:flex;gap:4px" onclick="event.stopPropagation()">
+          <button class="dock-btn-icon" onclick="setDockState('minimized')" title="Minimize Dock">_</button>
+          <button class="dock-btn-icon" onclick="setDockState('standard')" title="Standard Dock">▫</button>
+          <button class="dock-btn-icon" onclick="setDockState('fullscreen')" title="Full Screen Spotlight">⛶</button>
+        </div>
+      </div>
+      <div class="dock-min-preview" id="dockMinPreview">Your prompt is ready. Click to expand.</div>
+      <div class="dock-layout">
+        <div class="dock-sidebar">
+          <div class="out-tabs">
+            <button class="out-tab active" data-t="raw" onclick="swTab('raw')">RAW Edit</button>
+            <button class="out-tab" data-t="chatgpt" onclick="swTab('chatgpt')">ChatGPT</button>
+            <button class="out-tab" data-t="gemini" onclick="swTab('gemini')">Gemini</button>
+            <button class="out-tab" data-t="magnific" onclick="swTab('magnific')">Magnific</button>
+          </div>
+          <button class="btn-sec" onclick="gen()" style="margin-top:auto">Regenerate</button>
+        </div>
+        <div class="dock-content">
+          <div class="out-pane active" data-t="raw">
+            <textarea class="raw-edit" id="rawEdit" oninput="onRawEdit()"></textarea>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+              <div style="font-size:11px;color:hsl(var(--muted-foreground))">Edit any line to sync back to form fields.</div>
+              <div class="btn-row" style="margin-top:0"><button class="btn-pri" onclick="copyOut('raw')">Copy RAW</button><button class="btn-save" onclick="saveTxt()">💾 Save .txt</button></div>
+            </div>
+          </div>
+          <div class="out-pane" data-t="chatgpt">
+            <div class="out-box" id="outChatgpt"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+              <div style="font-size:11px;color:hsl(var(--muted-foreground))">Structured, explicit negatives.</div>
+              <div class="btn-row" style="margin-top:0"><button class="btn-pri" onclick="copyOut('chatgpt')">Copy Prompt</button><button class="btn-save" onclick="saveTxt('chatgpt')">💾 Save .txt</button></div>
+            </div>
+          </div>
+          <div class="out-pane" data-t="gemini">
+            <div class="out-box" id="outGemini"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+              <div style="font-size:11px;color:hsl(var(--muted-foreground))">Concise, comma-separated.</div>
+              <div class="btn-row" style="margin-top:0"><button class="btn-pri" onclick="copyOut('gemini')">Copy Prompt</button><button class="btn-save" onclick="saveTxt('gemini')">💾 Save .txt</button></div>
+            </div>
+          </div>
+          <div class="out-pane" data-t="magnific">
+            <div class="out-box" id="outMagnific"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+              <div style="font-size:11px;color:hsl(var(--muted-foreground))">Quality & texture emphasis.</div>
+              <div class="btn-row" style="margin-top:0"><button class="btn-pri" onclick="copyOut('magnific')">Copy Prompt</button><button class="btn-save" onclick="saveTxt('magnific')">💾 Save .txt</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- RIGHT: SUFFIX -->
-  <div class="bento-card bento-span-12 side-col" style="margin:0">
-    <div class="col-hdr" style="margin-bottom:12px"><span>Light, Camera & Post Finishing</span><span class="badge badge-sfx">Suffix</span></div>
-    <div class="suffix-grid">
+  <!-- RIGHT COLUMN (IDE Agent Chat Panel Metaphor) -->
+  <div class="ide-col ide-col-right">
+    <div class="bento-card side-col">
+      <div class="col-hdr" style="margin-bottom:12px"><span>Light, Camera & Post</span><span class="badge badge-sfx">Suffix</span></div>
       <!-- Colors -->
-      <div class="blk blk-sfx" style="margin:0">
+      <div class="blk blk-sfx">
         <div class="blk-hdr">🎨 Colors <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
         <div class="fld"><label class="fld-lbl">Palette</label><select id="palette"><option value="">— —</option><option value="monochromatic">Mono</option><option value="high contrast">High contrast</option><option value="cool tech tone" selected>Cool tech</option><option value="warm premium">Warm premium</option><option value="desaturated editorial">Desaturated</option><option value="neon saturated">Neon</option><option value="earth tones">Earth</option><option value="pastel">Pastel</option></select></div>
         <div class="color-row"><div class="sw-wrap"><input type="color" id="colOP" value="#1c2b45" oninput="sCol('OP')"></div><div class="c-meta"><div class="c-lbl">Outfit Primary</div><div style="display:flex;gap:4px;align-items:center"><input type="text" class="hex-inp" id="hexOP" value="#1c2b45" oninput="hCol('OP')"><label class="tog-use"><input type="checkbox" id="useOP" checked onchange="gen()">use</label></div></div></div>
@@ -503,14 +581,14 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
         <div class="color-row"><div class="sw-wrap"><input type="color" id="colBG" value="#e4e2dc" oninput="sCol('BG')"></div><div class="c-meta"><div class="c-lbl">Background</div><div style="display:flex;gap:4px;align-items:center"><input type="text" class="hex-inp" id="hexBG" value="#e4e2dc" oninput="hCol('BG')"><label class="tog-use"><input type="checkbox" id="useBG" onchange="gen()">use</label></div></div></div>
       </div>
       <!-- Lighting -->
-      <div class="blk blk-sfx" style="margin:0">
+      <div class="blk blk-sfx">
         <div class="blk-hdr">Lighting <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
         <div class="fld"><label class="fld-lbl">Setup</label><select id="lighting" onchange="hc(this,'lightingC')"><option value="">— —</option><option value="soft editorial softbox" selected>Soft editorial</option><option value="Rembrandt">Rembrandt</option><option value="split lighting">Split</option><option value="rim backlit">Rim backlit</option><option value="natural window">Natural window</option><option value="golden hour">Golden hour</option><option value="neon gel">Neon gel</option><option value="low key dramatic">Low key</option><option value="high key bright">High key</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="lightingC"><input type="text" oninput="gen()"></div></div>
         <div class="fld"><label class="fld-lbl">Shadow</label><select id="shadow"><option value="">— —</option><option value="low soft">Low soft</option><option value="medium balanced" selected>Medium</option><option value="high sculpted">High sculpted</option><option value="chiaroscuro">Chiaroscuro</option></select></div>
         <div class="fld"><label class="fld-lbl">WB</label><select id="wb"><option value="">— —</option><option value="neutral 5500K" selected>5500K</option><option value="warm 3200K">3200K warm</option><option value="cool 7000K">7000K cool</option><option value="golden sunset">Golden</option></select></div>
       </div>
       <!-- Camera -->
-      <div class="blk blk-sfx" style="margin:0">
+      <div class="blk blk-sfx">
         <div class="blk-hdr">Camera <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
         <div class="fld"><label class="fld-lbl">Lens</label><select id="lens"><option value="">— —</option><option value="24mm wide">24mm</option><option value="35mm environmental">35mm</option><option value="50mm natural">50mm</option><option value="85mm flattering" selected>85mm</option><option value="135mm telephoto">135mm</option></select></div>
         <div class="fld"><label class="fld-lbl">Aperture</label><select id="aperture"><option value="">— —</option><option value="f/1.4 bokeh">f/1.4</option><option value="f/2.0 shallow" selected>f/2.0</option><option value="f/4.0 balanced">f/4.0</option><option value="f/8.0 deep">f/8.0</option></select></div>
@@ -521,7 +599,7 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
         <div class="fld"><label class="fld-lbl">Aspect Ratio</label><select id="aspectRatio" onchange="hc(this,'aspectRatioC')"><option value="">— skip —</option><option value="1:1 square">1:1</option><option value="4:5 portrait">4:5</option><option value="3:4">3:4</option><option value="9:16 vertical">9:16</option><option value="16:9 cinematic">16:9</option><option value="2:3">2:3</option><option value="3:2 landscape">3:2</option><option value="21:9 ultrawide">21:9</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="aspectRatioC"><input type="text" oninput="gen()"></div></div>
       </div>
       <!-- Post -->
-      <div class="blk blk-sfx" style="margin:0">
+      <div class="blk blk-sfx">
         <div class="blk-hdr">Post <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
         <div class="fld"><label class="fld-lbl">Retouch</label><select id="retouch"><option value="">— —</option><option value="natural pore preserved" selected>Natural</option><option value="minimal documentary">Minimal</option><option value="beauty smooth">Beauty</option><option value="heavy fashion porcelain">Heavy fashion</option></select></div>
         <div class="fld"><label class="fld-lbl">Grade</label><select id="grade" onchange="hc(this,'gradeC')"><option value="">— —</option><option value="clean commercial" selected>Clean commercial</option><option value="filmic S-curve">Filmic</option><option value="desaturated muted">Desaturated</option><option value="high contrast punchy">High contrast</option><option value="vintage film">Vintage</option><option value="B&W">B&W</option><option value="matte fade">Matte fade</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="gradeC"><input type="text" oninput="gen()"></div></div>
@@ -532,8 +610,7 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
     </div>
   </div>
 
-</div><!-- /bento-grid -->
-</div><!-- /bento-wrapper -->
+</div><!-- /ide-wrapper -->
 
 <footer class="footer">
   <span>Proras — Photography Prompt Builder</span>
@@ -541,58 +618,6 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
 </footer>
 <div class="toast" id="toast"></div>
 
-<div class="bottom-dock" id="bottomDock">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px" onclick="if(document.getElementById('bottomDock').classList.contains('dock-minimized')) setDockState('standard')">
-    <span style="color:hsl(var(--foreground));font-weight:700;font-size:15px;letter-spacing:-0.3px">⚡ FINAL PROMPT OUTPUT</span>
-    <div style="display:flex;gap:4px" onclick="event.stopPropagation()">
-      <button class="dock-btn" onclick="setDockState('minimized')" title="Minimize Dock">_ Minimize</button>
-      <button class="dock-btn" onclick="setDockState('standard')" title="Standard Dock">▫ Standard</button>
-      <button class="dock-btn" onclick="setDockState('fullscreen')" title="Full Screen Spotlight">⛶ Fullscreen</button>
-    </div>
-  </div>
-  <div class="dock-min-preview" id="dockMinPreview">Your prompt is ready. Click to expand.</div>
-  <div class="dock-layout">
-    <div class="dock-sidebar">
-      <div class="out-tabs">
-        <button class="out-tab active" data-t="raw" onclick="swTab('raw')">RAW Edit</button>
-        <button class="out-tab" data-t="chatgpt" onclick="swTab('chatgpt')">ChatGPT</button>
-        <button class="out-tab" data-t="gemini" onclick="swTab('gemini')">Gemini</button>
-        <button class="out-tab" data-t="magnific" onclick="swTab('magnific')">Magnific</button>
-      </div>
-      <button class="btn-sec" onclick="gen()" style="margin-top:auto">Regenerate</button>
-    </div>
-    <div class="dock-content">
-      <div class="out-pane active" data-t="raw">
-        <textarea class="raw-edit" id="rawEdit" oninput="onRawEdit()"></textarea>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
-          <div style="font-size:11px;color:hsl(var(--muted-foreground))">Edit any line to sync back to form fields.</div>
-          <div class="btn-row" style="margin-top:0"><button class="btn-pri" onclick="copyOut('raw')">Copy RAW</button><button class="btn-save" onclick="saveTxt()">💾 Save .txt</button></div>
-        </div>
-      </div>
-      <div class="out-pane" data-t="chatgpt">
-        <div class="out-box" id="outChatgpt"></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
-          <div style="font-size:11px;color:hsl(var(--muted-foreground))">Structured, explicit negatives.</div>
-          <div class="btn-row" style="margin-top:0"><button class="btn-pri" onclick="copyOut('chatgpt')">Copy Prompt</button><button class="btn-save" onclick="saveTxt('chatgpt')">💾 Save .txt</button></div>
-        </div>
-      </div>
-      <div class="out-pane" data-t="gemini">
-        <div class="out-box" id="outGemini"></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
-          <div style="font-size:11px;color:hsl(var(--muted-foreground))">Concise, comma-separated.</div>
-          <div class="btn-row" style="margin-top:0"><button class="btn-pri" onclick="copyOut('gemini')">Copy Prompt</button><button class="btn-save" onclick="saveTxt('gemini')">💾 Save .txt</button></div>
-        </div>
-      </div>
-      <div class="out-pane" data-t="magnific">
-        <div class="out-box" id="outMagnific"></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
-          <div style="font-size:11px;color:hsl(var(--muted-foreground))">Quality & texture emphasis.</div>
-          <div class="btn-row" style="margin-top:0"><button class="btn-pri" onclick="copyOut('magnific')">Copy Prompt</button><button class="btn-save" onclick="saveTxt('magnific')">💾 Save .txt</button></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 <script>
 /* ===== GLOBALS ===== */
 let gender='male',pplCount='1',rawLock=false;
