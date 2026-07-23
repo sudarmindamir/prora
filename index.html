@@ -90,7 +90,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:hsl(var(-
 .bento-wrapper{max-width:1200px;margin:0 auto;padding:0 24px 40px;display:flex;flex-direction:column;gap:16px}
 .bento-grid{display:grid;grid-template-columns:repeat(12, 1fr);gap:16px;align-items:start}
 @media(max-width:900px){.bento-grid{display:flex;flex-direction:column}}
-.bento-span-12{grid-column:span 12}.bento-span-8{grid-column:span 8}.bento-span-4{grid-column:span 4}
+.bento-span-12{grid-column:span 12}.bento-span-8{grid-column:span 8}.bento-span-6{grid-column:span 6}.bento-span-4{grid-column:span 4}.bento-span-3{grid-column:span 3}
 .bento-card{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:16px;padding:20px;transition:border-color .15s,box-shadow .15s}
 .bento-card:hover{border-color:hsl(var(--ring)/0.2);box-shadow:0 4px 20px hsl(0 0% 0% / 0.05)}
 
@@ -109,7 +109,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:hsl(var(-
 .bottom-dock.dock-minimized{bottom:16px;width:300px;padding:12px 20px;cursor:pointer;border-color:hsl(var(--border));background:hsl(var(--card))}
 .bottom-dock.dock-minimized:hover{border-color:hsl(var(--ring)/0.5)}
 .bottom-dock.dock-minimized .dock-layout{display:none}
-.bottom-dock.dock-fullscreen{bottom:0;left:0;top:0;width:100%;max-width:100%;transform:none;border-radius:0;border:none;background:hsl(var(--background));z-index:999;padding:32px;overflow-y:auto}
+.bottom-dock.dock-fullscreen{bottom:50%;left:50%;transform:translate(-50%, 50%);width:90%;max-width:1400px;max-height:90vh;z-index:999;box-shadow:0 0 0 9999px hsl(0 0% 0% / 0.6),0 20px 60px hsl(0 0% 0% / 0.3);overflow-y:auto}
 .dock-btn{background:transparent;border:none;color:hsl(var(--muted-foreground));font-size:14px;cursor:pointer;padding:4px 8px;border-radius:var(--radius);transition:all .15s}
 .dock-btn:hover{background:hsl(var(--accent));color:hsl(var(--foreground))}
 .dock-min-preview{display:none;font-size:12px;color:hsl(var(--muted-foreground));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
@@ -150,7 +150,7 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
 .scene-area{transition:border-color .15s}
 .scene-area .hdr{font-size:15px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px;letter-spacing:-0.3px}
 .scene-area .sub{font-size:12px;color:hsl(var(--muted-foreground));margin-bottom:16px}
-.scene-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.scene-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:12px}
 .sg{background:hsl(var(--muted)/0.3);border:1px solid hsl(var(--border));border-radius:var(--radius);padding:14px;transition:border-color .15s}
 .sg:hover{border-color:hsl(var(--ring)/0.2);background:hsl(var(--card))}
 .sg-title{font-size:11px;font-weight:600;color:hsl(var(--scn));text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid hsl(var(--scn-bd))}
@@ -253,21 +253,13 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
 
 <div class="bento-wrapper">
 
-<div class="top-bar" style="margin:0;display:flex;justify-content:center;margin-bottom:8px">
-  <div class="info-pill" style="flex:none"><span class="badge badge-pfx">Prefix</span> Style, format, photographic opener</div>
-  <div class="info-pill" style="flex:none"><span class="badge badge-scn">Scene</span> Subject, action, setting, mood</div>
-  <div class="info-pill" style="flex:none"><span class="badge badge-sfx">Suffix</span> Technical parameters, finishing</div>
-</div>
-
 <!-- BRAND -->
-<div class="bento-card bento-span-12 collapse-section" style="border-color:hsl(var(--acc))">
-  <div class="collapse-hdr" onclick="togCol(this)"><span>🏢 Brand Industry & Usage Context</span><span class="collapse-arrow">▼</span></div>
-  <div class="collapse-body open">
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-      <div class="fld"><label class="fld-lbl">Industry</label><select id="brandIndustry" onchange="hc(this,'brandIndustryC')"><option value="">— skip —</option><option value="artificial intelligence and technology">AI & Tech</option><option value="fashion and apparel">Fashion</option><option value="streetwear and urban culture">Streetwear</option><option value="luxury and premium goods">Luxury</option><option value="beauty and cosmetics">Beauty</option><option value="fitness and wellness">Fitness</option><option value="food and beverage">Food & Bev</option><option value="automotive and mobility">Automotive</option><option value="real estate and architecture">Real Estate</option><option value="finance and fintech">Finance</option><option value="healthcare and medical">Healthcare</option><option value="entertainment and media">Entertainment</option><option value="music and recording industry">Music</option><option value="sports and athletics">Sports</option><option value="travel and hospitality">Travel</option><option value="logistics and supply chain">Logistics</option><option value="gaming and esports">Gaming</option><option value="magazine and editorial publishing">Magazine</option><option value="e-commerce and retail">E-Commerce</option><option value="SaaS and software">SaaS</option><option value="crypto and web3">Crypto</option><option value="personal branding and coaching">Personal Brand</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="brandIndustryC"><input type="text" placeholder="Custom industry..." oninput="gen()"></div></div>
-      <div class="fld"><label class="fld-lbl">Usage</label><select id="brandUsage" onchange="hc(this,'brandUsageC')"><option value="">— skip —</option><option value="website hero banner">Website Hero</option><option value="social media content">Social Media</option><option value="magazine editorial spread">Magazine Editorial</option><option value="billboard and outdoor advertising">Billboard</option><option value="product packaging">Packaging</option><option value="pitch deck and presentation">Pitch Deck</option><option value="brand identity system">Brand Identity</option><option value="campaign lookbook">Lookbook</option><option value="app onboarding screens">App Onboarding</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="brandUsageC"><input type="text" oninput="gen()"></div></div>
-      <div class="fld"><label class="fld-lbl">Tone</label><select id="brandTone" onchange="hc(this,'brandToneC')"><option value="">— skip —</option><option value="corporate and authoritative">Corporate</option><option value="youthful and energetic">Youthful</option><option value="premium and exclusive">Premium</option><option value="edgy and disruptive">Edgy</option><option value="clean and minimal">Minimal</option><option value="futuristic and innovative">Futuristic</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="brandToneC"><input type="text" oninput="gen()"></div></div>
-    </div>
+<div class="bento-span-12" style="margin-bottom:8px">
+  <div style="font-size:15px;font-weight:700;margin-bottom:12px;letter-spacing:-0.3px;color:hsl(var(--foreground))">🏢 Brand Industry & Usage Context</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+    <div class="fld"><label class="fld-lbl">Industry</label><select id="brandIndustry" onchange="hc(this,'brandIndustryC')"><option value="">— skip —</option><option value="artificial intelligence and technology">AI & Tech</option><option value="fashion and apparel">Fashion</option><option value="streetwear and urban culture">Streetwear</option><option value="luxury and premium goods">Luxury</option><option value="beauty and cosmetics">Beauty</option><option value="fitness and wellness">Fitness</option><option value="food and beverage">Food & Bev</option><option value="automotive and mobility">Automotive</option><option value="real estate and architecture">Real Estate</option><option value="finance and fintech">Finance</option><option value="healthcare and medical">Healthcare</option><option value="entertainment and media">Entertainment</option><option value="music and recording industry">Music</option><option value="sports and athletics">Sports</option><option value="travel and hospitality">Travel</option><option value="logistics and supply chain">Logistics</option><option value="gaming and esports">Gaming</option><option value="magazine and editorial publishing">Magazine</option><option value="e-commerce and retail">E-Commerce</option><option value="SaaS and software">SaaS</option><option value="crypto and web3">Crypto</option><option value="personal branding and coaching">Personal Brand</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="brandIndustryC"><input type="text" placeholder="Custom industry..." oninput="gen()"></div></div>
+    <div class="fld"><label class="fld-lbl">Usage</label><select id="brandUsage" onchange="hc(this,'brandUsageC')"><option value="">— skip —</option><option value="website hero banner">Website Hero</option><option value="social media content">Social Media</option><option value="magazine editorial spread">Magazine Editorial</option><option value="billboard and outdoor advertising">Billboard</option><option value="product packaging">Packaging</option><option value="pitch deck and presentation">Pitch Deck</option><option value="brand identity system">Brand Identity</option><option value="campaign lookbook">Lookbook</option><option value="app onboarding screens">App Onboarding</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="brandUsageC"><input type="text" oninput="gen()"></div></div>
+    <div class="fld"><label class="fld-lbl">Tone</label><select id="brandTone" onchange="hc(this,'brandToneC')"><option value="">— skip —</option><option value="corporate and authoritative">Corporate</option><option value="youthful and energetic">Youthful</option><option value="premium and exclusive">Premium</option><option value="edgy and disruptive">Edgy</option><option value="clean and minimal">Minimal</option><option value="futuristic and innovative">Futuristic</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="brandToneC"><input type="text" oninput="gen()"></div></div>
   </div>
 </div>
 
@@ -360,15 +352,17 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
 </div>
 
 <!-- TEMPLATES -->
-<div class="bento-card bento-span-12 tpl-section" style="margin:0">
-  <div class="tpl-title">Art Direction Templates — Click to Apply</div>
-  <div class="tpl-grid" id="tplGrid"></div>
+<div class="bento-card bento-span-12 collapse-section" style="margin:0">
+  <div class="collapse-hdr" onclick="togCol(this)"><span>✨ Art Direction Templates (Snack)</span><span class="collapse-arrow">▼</span></div>
+  <div class="collapse-body">
+    <div class="tpl-grid" id="tplGrid"></div>
+  </div>
 </div>
 
 <div class="bento-grid">
 
   <!-- LEFT: PREFIX -->
-  <div class="bento-card bento-span-4 side-col">
+  <div class="bento-card bento-span-3 side-col">
     <div class="col-hdr"><span>Prefix Builder</span><span class="badge badge-pfx">Prefix</span></div>
     <div class="blk blk-pfx">
       <div class="blk-hdr">Photography Style <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
@@ -380,7 +374,7 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
   </div>
 
 <!-- CENTER: SCENE DESCRIPTION -->
-<div class="bento-card bento-span-4 scene-area" style="margin:0;grid-column:span 4">
+<div class="bento-card bento-span-6 scene-area" style="margin:0">
   <div class="hdr">🎬 Scene Description <span class="badge badge-scn">Primary Editor</span></div>
   <div class="sub">Core of the prompt — each section is a separate detail column. Change freely while Prefix & Suffix stay locked.</div>
   <div class="scene-grid">
@@ -484,7 +478,7 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
 </div>
 
   <!-- RIGHT: SUFFIX -->
-  <div class="bento-card bento-span-4 side-col">
+  <div class="bento-card bento-span-3 side-col">
     <div class="col-hdr"><span>Light, Camera & Post</span><span class="badge badge-sfx">Suffix</span></div>
     <!-- Colors (hex only - no text color names to avoid conflict) -->
     <div class="blk blk-sfx">
