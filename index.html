@@ -306,9 +306,12 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
     <!-- TOP 70%: MAIN EDITOR AREA -->
     <div class="ide-center-top">
       <!-- Reverse Engineering -->
-      <div class="bento-card collapse-section" style="border-color:hsl(var(--acc)/0.3)">
-        <div class="collapse-hdr" onclick="togCol(this)"><span>🔬 Reverse Engineering — Image Analysis Auto-Fill</span><span class="collapse-arrow open">▼</span></div>
-        <div class="collapse-body open" id="reBody">
+      <div class="bento-card" style="border-color:hsl(var(--acc)/0.3);background:hsl(var(--card))">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid hsl(var(--border))">
+          <span style="font-size:14px;font-weight:700;color:hsl(var(--foreground));display:flex;align-items:center;gap:6px">🔬 Reverse Engineering — Image Analysis Auto-Fill</span>
+          <span class="badge badge-scn">AI Auto-Fill</span>
+        </div>
+        <div id="reBody">
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
             <div style="background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:10px"><div style="font-size:11px;font-weight:600">① Copy RE Prompt</div><div style="font-size:9px;color:hsl(var(--muted-foreground))">Copy extraction prompt.</div></div>
             <div style="background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:10px"><div style="font-size:11px;font-weight:600">② Upload + Paste</div><div style="font-size:9px;color:hsl(var(--muted-foreground))">Upload image to AI with prompt.</div></div>
