@@ -113,7 +113,7 @@ body.spotlight-active .ide-center-top {
 
 /* ===== BOTTOM DOCK (IDE TERMINAL & SPOTLIGHT) ===== */
 .dock-wrapper{width:100%;background:hsl(var(--muted));padding:16px;z-index:90;flex-shrink:0}
-.bottom-dock{position:relative;width:100%;flex-shrink:0;background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 -8px 30px -4px hsl(var(--foreground)/0.08),0 -4px 12px -2px hsl(var(--foreground)/0.04)}
+.bottom-dock{position:relative;width:100%;flex-shrink:0;background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;box-shadow:0 -8px 30px -4px hsl(var(--foreground)/0.08),0 -4px 12px -2px hsl(var(--foreground)/0.04)}
 .bottom-dock:focus-within{border-color:hsl(var(--ring)/0.3);box-shadow:0 -12px 40px -5px hsl(var(--foreground)/0.12)}
 .bottom-dock.dock-minimized{position:fixed;bottom:48px;left:50%;transform:translateX(-50%);width:320px;padding:10px 16px;cursor:pointer;z-index:150;border-color:hsl(var(--border));box-shadow:0 10px 40px -10px hsl(0 0% 0% / 0.2)}
 .bottom-dock.dock-minimized:hover{border-color:hsl(var(--ring)/0.5)}
@@ -204,15 +204,15 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
 .tog-use{display:flex;align-items:center;gap:4px;font-size:11px;color:hsl(var(--muted-foreground));font-weight:500}
 
 /* ===== OUTPUT TABS & DOCK ELEMENTS ===== */
-.dock-layout{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:start}
+.dock-layout{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start}
 @media(max-width:768px){.dock-layout{grid-template-columns:1fr;gap:12px}}
-.dock-sidebar{display:flex;flex-direction:column;gap:10px}
+.dock-sidebar{display:flex;flex-direction:column;gap:8px}
 .out-tabs{display:flex;flex-direction:column;gap:4px;border-radius:var(--radius)}
-.out-tab{padding:10px 12px;border:none;background:transparent;color:hsl(var(--muted-foreground));font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;text-align:left;border-radius:var(--radius);transition:all .15s}
+.out-tab{padding:6px 10px;border:none;background:transparent;color:hsl(var(--muted-foreground));font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;text-align:left;border-radius:var(--radius);transition:all .15s}
 .out-tab.active{background:hsl(var(--foreground));color:hsl(var(--background));font-weight:600}.out-tab:hover:not(.active){background:hsl(var(--accent))}
 .out-pane{display:none}.out-pane.active{display:flex;flex-direction:column;flex:1;min-height:0}
-.out-box{font-size:13px;line-height:1.7;padding:16px;background:hsl(var(--prompt-bg));border-radius:var(--radius);border:1px solid hsl(var(--border));overflow-y:auto;height:140px;flex:1}
-.raw-edit{width:100%;height:140px;min-height:100px;flex:1;padding:16px;background:hsl(var(--prompt-bg));border:1px solid hsl(var(--border));border-radius:var(--radius);color:hsl(var(--foreground));font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;resize:vertical;white-space:pre-wrap;overflow-y:auto;outline:none;transition:border-color .15s,box-shadow .15s}
+.out-box{font-size:12px;line-height:1.6;padding:10px 12px;background:hsl(var(--prompt-bg));border-radius:var(--radius);border:1px solid hsl(var(--border));overflow-y:auto;height:100px;flex:1}
+.raw-edit{width:100%;height:100px;min-height:80px;flex:1;padding:10px 12px;background:hsl(var(--prompt-bg));border:1px solid hsl(var(--border));border-radius:var(--radius);color:hsl(var(--foreground));font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.5;resize:vertical;white-space:pre-wrap;overflow-y:auto;outline:none;transition:border-color .15s,box-shadow .15s}
 .dock-fullscreen .raw-edit, .dock-fullscreen .out-box{height:auto;flex:1}
 .raw-edit:focus{border-color:hsl(var(--ring));box-shadow:0 0 0 2px hsl(var(--ring)/0.2);background:hsl(var(--background))}
 .plat-lbl{font-size:12px;font-weight:600;color:hsl(var(--muted-foreground));margin-bottom:6px}
