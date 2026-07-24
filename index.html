@@ -846,12 +846,23 @@ function vpAccept(){
   const pMap={'standing':'standing confidently','walking':'walking purposefully','sitting':'seated at desk','leaning':'leaning against wall','crouching':'crouching low','t-pose':'standing confidently'};
   const hMap={'facing camera':'facing camera directly','looking left':'three-quarter left','looking right':'three-quarter right','looking up':'facing camera directly'};
   const el=id=>document.getElementById(id);
-  if(pMap[p.body]){const o=Array.from(el('action').options).find(o=>o.value===pMap[p.body]);if(o)el('action').value=o.value}
-  if(hMap[p.head]){const o=Array.from(el('subjectFacing').options).find(o=>o.value===hMap[p.head]);if(o)el('subjectFacing').value=o.value}
+  const changed = [];
+  if(pMap[p.body]){const o=Array.from(el('action').options).find(o=>o.value===pMap[p.body]);if(o){el('action').value=o.value; changed.push(el('action'));}}
+  if(hMap[p.head]){const o=Array.from(el('subjectFacing').options).find(o=>o.value===hMap[p.head]);if(o){el('subjectFacing').value=o.value; changed.push(el('subjectFacing'));}}
   const ch=parseInt(el('vpCamH').value);if(ch<-30)el('camAngle').value='low angle';else if(ch>30)el('camAngle').value='slight high';else el('camAngle').value='eye level';
+  changed.push(el('camAngle'));
   const ss=el('vpShot').value;const ssM={'close-up':'close-up','medium CU':'medium CU','medium':'medium CU','waist up':'waist up','full body':'full body','long shot':'long shot'};
-  if(ssM[ss]){const o=Array.from(el('shotSize').options).find(o=>o.value===ssM[ss]);if(o)el('shotSize').value=o.value}
-  const info=document.getElementById('vpInfo');info.innerHTML=`✅ Applied: Pose→${p.body}, Head→${p.head}, Angle→${el('camAngle').value}, Shot→${el('shotSize').value}`;info.style.display='block';setTimeout(()=>info.style.display='none',4000);
+  if(ssM[ss]){const o=Array.from(el('shotSize').options).find(o=>o.value===ssM[ss]);if(o){el('shotSize').value=o.value; changed.push(el('shotSize'));}}
+  
+  changed.forEach(e => {
+    e.classList.remove('auto-filled');
+    void e.offsetWidth;
+    e.classList.add('auto-filled');
+  });
+
+  const info=document.getElementById('vpInfo');
+  info.innerHTML=`<span style="color:hsl(var(--ok))">✓ ${changed.length} vars updated: Pose→${p.body}, Head→${p.head}, Angle→${el('camAngle').value}, Shot→${el('shotSize').value}</span>`;
+  info.style.display='block';
   gen();toast('Viewport applied ✓');
 }
 
