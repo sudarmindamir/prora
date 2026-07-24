@@ -664,39 +664,72 @@ function analyzeRE(){
   const inp=document.getElementById('rePaste').value.trim();if(!inp){toast('Paste analysis first');return}
   const btn=document.getElementById('reBtn');btn.classList.add('analyzing');btn.textContent='⏳...';
   setTimeout(()=>{
-    const p=parseRE(inp);
-    const {filled, custom} = applyRE(p);
-    btn.classList.remove('analyzing');
-    btn.textContent='🔍 Analyze & Auto-Fill';
-    
-    // Collapse RE section if open
-    const reBody = document.getElementById('reBody');
-    if(reBody && reBody.classList.contains('open')) {
-       const hdr = reBody.parentElement.querySelector('.col-hdr');
-       if(hdr) togCol(hdr);
+    try {
+      const p=parseRE(inp);
+      const res = applyRE(p);
+      const filled = res ? (res.filled || 0) : 0;
+      const custom = res ? (res.custom || 0) : 0;
+      btn.classList.remove('analyzing');
+      btn.textContent='🔍 Analyze & Auto-Fill';
+      
+      const reBody = document.getElementById('reBody');
+      if(reBody && reBody.classList.contains('open')) {
+         const hdr = reBody.parentElement.querySelector('.col-hdr');
+         if(hdr) togCol(hdr);
+      }
+      
+      toast(`Analysis ✓ ${filled} filled, ${custom} custom`);
+      
+      const ks=Object.keys(p);
+      document.getElementById('reResult').innerHTML=`<div style="background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:8px;font-size:10px;color:hsl(var(--muted-foreground))"><span style="color:hsl(var(--ok))">✓ ${ks.length} vars parsed (${filled} matched, ${custom} custom)</span></div>`;
+      document.getElementById('reResult').style.display='block';
+      gen();
+    } catch(e) {
+      btn.classList.remove('analyzing');
+      btn.textContent='🔍 Analyze & Auto-Fill';
+      alert("Error parsing: " + e.message);
+      console.error(e);
     }
-    
-    // Show toast
-    toast(`Analysis ✓ ${filled} filled, ${custom} custom`);
-    
-    // Update internal info
-    const ks=Object.keys(p);
-    document.getElementById('reResult').innerHTML=`<div style="background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:8px;font-size:10px;color:hsl(var(--muted-foreground))"><span style="color:hsl(var(--ok))">✓ ${ks.length} vars parsed (${filled} matched, ${custom} custom)</span></div>`;
-    document.getElementById('reResult').style.display='block';
-    gen();
   },400);
 }
-function parseRE(t){const r={};t.split('\n').forEach(l=>{const cl=l.replace(/\*\*/g, '');const m=cl.match(/([a-z_]+)\s*:\s*(.+)/i);if(m)r[m[1].trim().toUpperCase()]=m[2].trim().replace(/^\[|\]$/g,'').trim()});return r}
+function parseRE(t) {
+  const r={};
+  t.split('\n').forEach(l=>{
+    const cl = l.replace(/\*\*/g, '').trim();
+    const m = cl.match(/([a-z_]+)\s*:\s*(.+)/i);
+    if(m) {
+      let key = m[1].trim().toUpperCase();
+      let val = m[2].trim().replace(/^\[|\]$/g,'').trim();
+      if(key && val) r[key] = val;
+    }
+  });
+  return r;
+}
 const reMap={PHOTOGRAPHY_GENRE:'pfxGenre',CAMERA_FORMAT:'pfxCam',ART_DIRECTION:'pfxArt',BRAND_INDUSTRY:'brandIndustry',SUBJECT_TYPE:'subjectType',SUBJECT_AGE:'subjectAge',SUBJECT_BUILD:'subjectBuild',SUBJECT_HAIR:'subjectHair',FACIAL_EXPRESSION:'expression',MICRO_EXPRESSION:'microExpr',EYE_INTENSITY:'eyeIntensity',EMOTION_CORE:'emotionCore',POWER_LEVEL:'power',ARCHETYPE:'archetype',ENVIRONMENT:'environment',ATMOSPHERE:'atmosphere',FRAME_DENSITY:'frameDensity',WARDROBE:'wardrobe',WARDROBE_DETAIL:'wardrobeDetail',OUTERWEAR:'outerwear',ACCESSORIES:'accessories',ACTION_POSE:'action',HAND_POSITION:'hand',SUBJECT_FACING:'subjectFacing',GAZE:'subjectFacing',MAKEUP:'makeup',MOTION_BLUR:'motionBlur',FOREGROUND_DISTANCE:'fgDist',BACKGROUND_DISTANCE:'bgDist',FRAMING_CROP:'framing',PALETTE:'palette',LIGHTING:'lighting',SHADOW:'shadow',WHITE_BALANCE:'wb',LENS:'lens',APERTURE:'aperture',CAMERA_ANGLE:'camAngle',SHOT_SIZE:'shotSize',COMPOSITION:'composition',RETOUCH:'retouch',COLOR_GRADE:'grade',RESOLUTION:'resolution',ASPECT_RATIO:'aspectRatio',SUBJECT_ETHNICITY:'ethnicity'};
 function fuz(a,b){if(a===b)return 1;const w=a.split(/[\s,]+/).filter(x=>x.length>1);if(!w.length)return 0;let m=0;w.forEach(x=>{if(b.includes(x))m++});return m/w.length}
 function applyRE(p){
   let filled=0, custom=0;
-  if(p.SUBJECT_GENDER){setGn(p.SUBJECT_GENDER.toLowerCase().includes('female')?'female':'male'); filled++;}
-  if(p.PEOPLE_COUNT){const v=p.PEOPLE_COUNT;if(v==='1'||v==='2')setPpl(v);else setPpl('3+'); filled++;}
-  ['OUTFIT_HEX','BACKGROUND_HEX'].forEach(k=>{if(p[k]&&p[k].toLowerCase()!=='not specified'){const hex=p[k].replace(/[^#0-9a-fA-F]/g,'');if(/^#?[0-9A-Fa-f]{6}$/.test(hex)){const h=hex.startsWith('#')?hex:'#'+hex;const map={OUTFIT_HEX:'OP',BACKGROUND_HEX:'BG'};const n=map[k];if(n){document.getElementById('col'+n).value=h;document.getElementById('hex'+n).value=h;document.getElementById('use'+n).checked=true; filled++;}}}});
+  if(p.SUBJECT_GENDER){setGn(String(p.SUBJECT_GENDER).toLowerCase().includes('female')?'female':'male'); filled++;}
+  if(p.PEOPLE_COUNT){const v=String(p.PEOPLE_COUNT);if(v==='1'||v==='2')setPpl(v);else setPpl('3+'); filled++;}
+  ['OUTFIT_HEX','BACKGROUND_HEX'].forEach(k=>{
+    if(p[k]&&String(p[k]).toLowerCase()!=='not specified'){
+      const hex=String(p[k]).replace(/[^#0-9a-fA-F]/g,'');
+      if(/^#?[0-9A-Fa-f]{6}$/.test(hex)){
+        const h=hex.startsWith('#')?hex:'#'+hex;
+        const map={OUTFIT_HEX:'OP',BACKGROUND_HEX:'BG'};
+        const n=map[k];
+        if(n){
+          document.getElementById('col'+n).value=h;
+          document.getElementById('hex'+n).value=h;
+          document.getElementById('use'+n).checked=true;
+          filled++;
+        }
+      }
+    }
+  });
   for(const[rk,fid] of Object.entries(reMap)){
     if(!fid||!p[rk])continue;
-    const val=p[rk];
+    const val=String(p[rk]);
     if(val.toLowerCase()==='none'||val.toLowerCase()==='not specified')continue;
     const el=document.getElementById(fid);
     if(!el||el.disabled)continue;
@@ -707,7 +740,7 @@ function applyRE(p){
       const opts=Array.from(el.options).filter(o=>o.value&&o.value!=='custom');
       let best=null,bs=0;
       opts.forEach(o=>{const s=fuz(cv.toLowerCase(),o.value.toLowerCase());if(s>bs){bs=s;best=o}});
-      if(bs>.3&&!isC){el.value=best.value;el.classList.add('auto-filled'); filled++;}
+      if(bs>.3&&!isC){el.value=best.value;el.classList.remove('auto-filled');void el.offsetWidth;el.classList.add('auto-filled'); filled++;}
       else{
         const hasC=Array.from(el.options).some(o=>o.value==='custom');
         if(hasC){
