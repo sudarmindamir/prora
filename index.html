@@ -60,11 +60,12 @@
 
 /* ===== RESET & BASE ===== */
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:hsl(var(--background));color:hsl(var(--foreground));line-height:1.6;min-height:100vh;padding-bottom:340px;transition:background .3s,color .3s;font-size:14px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:hsl(var(--border));border-radius:99px}::-webkit-scrollbar-thumb:hover{background:hsl(var(--muted-foreground)/0.4)}
+html,body{height:100vh;margin:0;padding:0;overflow:hidden}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:hsl(var(--background));color:hsl(var(--foreground));line-height:1.6;display:flex;flex-direction:column;transition:background .3s,color .3s;font-size:14px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:hsl(var(--border));border-radius:99px}::-webkit-scrollbar-thumb:hover{background:hsl(var(--muted-foreground)/0.4)}
 
 /* ===== HEADER ===== */
-.header{height:56px;padding:0 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid hsl(var(--border));background:hsl(var(--header-bg));backdrop-filter:blur(16px);position:sticky;top:0;z-index:100}
+.header{height:52px;flex-shrink:0;padding:0 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid hsl(var(--border));background:hsl(var(--header-bg));backdrop-filter:blur(16px);z-index:100}
 .logo{font-size:18px;font-weight:700;letter-spacing:-0.4px;background:linear-gradient(135deg,hsl(var(--foreground)),hsl(var(--muted-foreground)));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .header-actions{display:flex;gap:8px;align-items:center}
 .theme-sw{width:44px;height:24px;background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:12px;cursor:pointer;display:flex;align-items:center;padding:0 3px;transition:all .2s}
@@ -81,20 +82,15 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:hsl(var(-
 .badge-scn{background:hsl(var(--scn-bg));color:hsl(var(--scn));border:1px solid hsl(var(--scn-bd))}
 .badge-sfx{background:hsl(var(--sfx-bg));color:hsl(var(--sfx));border:1px solid hsl(var(--sfx-bd))}
 
-/* ===== TOP BAR ===== */
-.top-bar{margin:16px 24px;display:flex;gap:12px;flex-wrap:wrap}
-.info-pill{display:flex;align-items:center;gap:8px;flex:1;min-width:200px;background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:10px 14px;font-size:13px;color:hsl(var(--muted-foreground));transition:border-color .15s}
-.info-pill:hover{border-color:hsl(var(--ring)/0.3)}
+/* ===== BENTO CARDS & SUB-CARDS ===== */
+.bento-card{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:16px;padding:16px;transition:border-color .15s,box-shadow .15s}
+.bento-card:hover{border-color:hsl(var(--ring)/0.2)}
+.sg{background:hsl(var(--muted)/0.25);border:1px solid hsl(var(--border));border-radius:var(--radius);padding:12px;margin-bottom:10px;transition:border-color .15s}
+.sg:last-child{margin-bottom:0}
+.sg:hover{border-color:hsl(var(--ring)/0.2);background:hsl(var(--card))}
+.sg-title{font-size:11px;font-weight:600;color:hsl(var(--muted-foreground));text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid hsl(var(--border));display:flex;align-items:center;justify-content:space-between}
 
-/* ===== BENTO LAYOUT ===== */
-.bento-wrapper{max-width:1200px;margin:0 auto;padding:0 24px 40px;display:flex;flex-direction:column;gap:16px}
-.bento-grid{display:grid;grid-template-columns:repeat(12, 1fr);gap:16px;align-items:start}
-@media(max-width:900px){.bento-grid{display:flex;flex-direction:column}}
-.bento-span-12{grid-column:span 12}.bento-span-8{grid-column:span 8}.bento-span-6{grid-column:span 6}.bento-span-4{grid-column:span 4}.bento-span-3{grid-column:span 3}
-.bento-card{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:16px;padding:20px;transition:border-color .15s,box-shadow .15s}
-.bento-card:hover{border-color:hsl(var(--ring)/0.2);box-shadow:0 4px 20px hsl(0 0% 0% / 0.05)}
-
-/* ===== COLLAPSIBLE SECTIONS (Bento Mod) ===== */
+/* ===== COLLAPSIBLE SECTIONS ===== */
 .collapse-section{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:16px;overflow:hidden;transition:border-color .15s}
 .collapse-section:hover{border-color:hsl(var(--ring)/0.2)}
 .collapse-hdr{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;font-size:14px;font-weight:600;transition:background .15s}
@@ -103,7 +99,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:hsl(var(-
 .collapse-arrow{transition:transform .2s cubic-bezier(0.4,0,0.2,1);font-size:14px;color:hsl(var(--muted-foreground))}.collapse-arrow.open{transform:rotate(180deg)}
 
 /* ===== SPOTLIGHT OVERLAY ===== */
-body.spotlight-active .bento-wrapper,
+body.spotlight-active .ide-wrapper,
 body.spotlight-active .header,
 body.spotlight-active .footer {
   filter: blur(8px) opacity(0.4);
@@ -112,9 +108,9 @@ body.spotlight-active .footer {
 }
 
 /* ===== BOTTOM DOCK (IDE TERMINAL & SPOTLIGHT) ===== */
-.bottom-dock{background:hsl(var(--card)/0.95);backdrop-filter:blur(16px);border:1px solid hsl(var(--border));border-radius:16px;padding:16px 20px;display:flex;flex-direction:column;gap:12px;transition:all .3s cubic-bezier(0.4,0,0.2,1);position:sticky;bottom:16px;z-index:80;box-shadow:0 -4px 25px -5px hsl(0 0% 0% / 0.25);width:100%}
+.bottom-dock{flex-shrink:0;background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;z-index:90;box-shadow:0 -4px 20px -5px hsl(0 0% 0% / 0.25);width:100%}
 .bottom-dock:focus-within{border-color:hsl(var(--ring)/0.3);box-shadow:0 10px 30px -10px hsl(0 0% 0% / 0.2)}
-.bottom-dock.dock-minimized{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);width:320px;padding:12px 20px;cursor:pointer;z-index:90;border-color:hsl(var(--border));box-shadow:0 10px 40px -10px hsl(0 0% 0% / 0.2)}
+.bottom-dock.dock-minimized{position:fixed;bottom:50px;left:50%;transform:translateX(-50%);width:320px;padding:12px 20px;cursor:pointer;z-index:90;border-color:hsl(var(--border));box-shadow:0 10px 40px -10px hsl(0 0% 0% / 0.2)}
 .bottom-dock.dock-minimized:hover{border-color:hsl(var(--ring)/0.5)}
 .bottom-dock.dock-minimized .dock-layout{display:none}
 .bottom-dock.dock-fullscreen{position:fixed;top:50%;left:50%;transform:translate(-50%, -50%);width:92vw;max-width:1300px;height:85vh;bottom:auto;border-radius:20px;border:1px solid hsl(var(--border));background:hsl(var(--card));z-index:1000;box-shadow:0 0 0 9999px hsl(0 0% 0% / 0.55),0 25px 60px -12px hsl(0 0% 0% / 0.4);overflow:hidden;padding:24px;display:flex;flex-direction:column}
@@ -123,44 +119,27 @@ body.spotlight-active .footer {
 .dock-fullscreen .out-pane.active{height:100%;display:flex;flex-direction:column;min-height:0}
 .dock-fullscreen .raw-edit,.dock-fullscreen .out-box{flex:1;height:100%;min-height:200px;resize:vertical}
 
-/* ===== ANTIGRAVITY IDE LAYOUT (1/5 - 3/5 - 1/5 RATIO) ===== */
-.ide-wrapper{width:100%;max-width:100%;padding:16px 20px 60px;display:grid;grid-template-columns:20% 1fr 20%;gap:16px;align-items:start;box-sizing:border-box}
-@media(max-width:1100px){.ide-wrapper{display:flex;flex-direction:column}}
-.ide-col{display:flex;flex-direction:column;gap:16px;min-width:0}
-.ide-col-left{position:sticky;top:72px;max-height:calc(100vh - 100px);overflow-y:auto}
-.ide-col-right{position:sticky;top:72px;max-height:calc(100vh - 100px);overflow-y:auto}
-.ide-col-center{display:flex;flex-direction:column;gap:16px;min-width:0;position:relative}
-.ide-center-top{display:flex;flex-direction:column;gap:16px;flex:1}
+/* ===== ANTIGRAVITY IDE LAYOUT (1/5 - 3/5 - 1/5 RATIO + INDEPENDENT SCROLL) ===== */
+.ide-wrapper{flex:1;width:100%;max-width:100%;padding:12px 16px;display:grid;grid-template-columns:20% 1fr 20%;gap:16px;align-items:stretch;box-sizing:border-box;overflow:hidden;min-height:0}
+@media(max-width:1100px){.ide-wrapper{display:flex;flex-direction:column;overflow-y:auto}}
+.ide-col{display:flex;flex-direction:column;gap:12px;min-width:0;height:100%;overflow:hidden}
+.ide-col-left{overflow-y:auto;padding-right:4px}
+.ide-col-right{overflow-y:auto;padding-right:4px}
+.ide-col-center{display:flex;flex-direction:column;gap:12px;min-width:0;overflow:hidden;position:relative}
+.ide-center-top{flex:1;overflow-y:auto;padding-right:4px;display:flex;flex-direction:column;gap:12px;min-height:0}
 
 /* Icon-Only Dock Buttons */
 .dock-btn-icon{background:transparent;border:1px solid hsl(var(--border));color:hsl(var(--muted-foreground));font-size:12px;width:28px;height:28px;border-radius:var(--radius);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .15s}
 .dock-btn-icon:hover{background:hsl(var(--accent));color:hsl(var(--foreground));border-color:hsl(var(--ring)/0.4)}
-
-.dock-btn{background:transparent;border:none;color:hsl(var(--muted-foreground));font-size:14px;cursor:pointer;padding:4px 8px;border-radius:var(--radius);transition:all .15s}
-.dock-btn:hover{background:hsl(var(--accent));color:hsl(var(--foreground))}
 .dock-min-preview{display:none;font-size:12px;color:hsl(var(--muted-foreground));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
 .dock-minimized .dock-min-preview{display:block}
 
-/* ===== GRID RESPONSIVENESS ===== */
-.prefix-grid{display:grid;grid-template-columns:repeat(4, 1fr);gap:12px}
-.suffix-grid{display:grid;grid-template-columns:repeat(4, 1fr);gap:12px}
-@media(max-width:1024px){
-  .prefix-grid,.suffix-grid{grid-template-columns:repeat(2, 1fr)}
-  .scene-grid{grid-template-columns:repeat(2, 1fr)}
-}
-@media(max-width:640px){
-  .prefix-grid,.suffix-grid,.scene-grid{grid-template-columns:1fr}
-}
-
-/* ===== BLOCKS / CARDS ===== */
-/* ===== BLOCKS / CARDS ===== */
-.blk{margin-bottom:12px;transition:border-color .15s,box-shadow .15s}
-.blk-pfx{border-left:3px solid hsl(var(--pfx));padding-left:12px}
-.blk-scn{border-left:3px solid hsl(var(--scn));padding-left:12px}
-.blk-sfx{border-left:3px solid hsl(var(--sfx));padding-left:12px}
-.blk-hdr{font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.lock-btn{width:24px;height:24px;border:1px solid hsl(var(--border));border-radius:calc(var(--radius) - 2px);background:transparent;color:hsl(var(--muted-foreground));font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:auto;flex-shrink:0;transition:all .15s}
-.lock-btn:hover{background:hsl(var(--accent));color:hsl(var(--accent-foreground))}
+/* ===== NO VERTICAL BORDER LINES ===== */
+.blk{margin-bottom:10px}
+.blk-pfx,.blk-scn,.blk-sfx{border-left:none!important;padding-left:0!important}
+.blk-hdr{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.lock-btn{width:22px;height:22px;border:1px solid hsl(var(--border));border-radius:calc(var(--radius) - 2px);background:transparent;color:hsl(var(--muted-foreground));font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:auto;flex-shrink:0;transition:all .15s}
+.lock-btn:hover{background:hsl(var(--accent));color:hsl(var(--foreground))}
 .lock-btn.locked{background:hsl(var(--acc-glow));border-color:hsl(var(--acc));color:hsl(var(--acc))}
 
 /* ===== FORM FIELDS ===== */
@@ -310,8 +289,9 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
 
     <!-- Prefix Builder -->
     <div class="bento-card side-col">
-      <div class="col-hdr"><span>Prefix Builder</span><span class="badge badge-pfx">Prefix</span></div>
-      <div class="blk blk-pfx" style="margin:0">
+      <div class="col-hdr" style="margin-bottom:10px"><span>Prefix Builder</span><span class="badge badge-pfx">Prefix</span></div>
+      <div class="sg">
+        <div class="sg-title">📸 Photography Style</div>
         <div class="fld"><label class="fld-lbl">Genre</label><select id="pfxGenre" onchange="hc(this,'pfxGenreC')"><option value="">— skip —</option><option value="editorial portrait" selected>Editorial portrait</option><option value="corporate headshot">Corporate headshot</option><option value="environmental portrait">Environmental</option><option value="street documentary">Street documentary</option><option value="fashion editorial">Fashion editorial</option><option value="cyberpunk neon portrait">Cyberpunk neon</option><option value="high streetwear photography">High streetwear</option><option value="cinematic film still">Cinematic film</option><option value="film noir high contrast">Film noir</option><option value="beauty close-up">Beauty CU</option><option value="conceptual">Conceptual</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxGenreC"><input type="text" oninput="gen()"></div></div>
         <div class="fld"><label class="fld-lbl">Camera</label><select id="pfxCam" onchange="hc(this,'pfxCamC')"><option value="">— skip —</option><option value="full frame DSLR photorealistic" selected>Full frame DSLR</option><option value="medium format high fidelity">Medium format</option><option value="35mm film analog grain">35mm film</option><option value="cinematic anamorphic">Anamorphic</option><option value="Hasselblad">Hasselblad</option><option value="Leica rangefinder">Leica</option><option value="RED 8K">RED 8K</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxCamC"><input type="text" oninput="gen()"></div></div>
         <div class="fld"><label class="fld-lbl">Art Direction</label><select id="pfxArt" onchange="hc(this,'pfxArtC')"><option value="">— skip —</option><option value="quiet confidence understated luxury">Quiet confidence</option><option value="bold graphic high impact editorial" selected>Bold editorial</option><option value="warm human approachable">Warm approachable</option><option value="minimal precise engineered">Minimal precise</option><option value="raw documentary honesty">Raw documentary</option><option value="dark moody cinematic">Dark cinematic</option><option value="cyberpunk neon futurism">Cyberpunk neon</option><option value="high streetwear editorial">High streetwear</option><option value="Wes Anderson pastel symmetry">Wes Anderson</option><option value="Wong Kar-wai neon melancholy">Wong Kar-wai</option><option value="Blade Runner dystopian">Blade Runner</option><option value="film noir dramatic">Film noir</option><option value="vintage retro nostalgic">Vintage retro</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxArtC"><input type="text" oninput="gen()"></div></div>
@@ -575,25 +555,25 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
   <!-- RIGHT COLUMN (IDE Agent Chat Panel Metaphor) -->
   <div class="ide-col ide-col-right">
     <div class="bento-card side-col">
-      <div class="col-hdr" style="margin-bottom:12px"><span>Light, Camera & Post</span><span class="badge badge-sfx">Suffix</span></div>
+      <div class="col-hdr" style="margin-bottom:10px"><span>Light, Camera & Post</span><span class="badge badge-sfx">Suffix</span></div>
       <!-- Colors -->
-      <div class="blk blk-sfx">
-        <div class="blk-hdr">🎨 Colors <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
+      <div class="sg">
+        <div class="sg-title">🎨 Colors <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
         <div class="fld"><label class="fld-lbl">Palette</label><select id="palette"><option value="">— —</option><option value="monochromatic">Mono</option><option value="high contrast">High contrast</option><option value="cool tech tone" selected>Cool tech</option><option value="warm premium">Warm premium</option><option value="desaturated editorial">Desaturated</option><option value="neon saturated">Neon</option><option value="earth tones">Earth</option><option value="pastel">Pastel</option></select></div>
         <div class="color-row"><div class="sw-wrap"><input type="color" id="colOP" value="#1c2b45" oninput="sCol('OP')"></div><div class="c-meta"><div class="c-lbl">Outfit Primary</div><div style="display:flex;gap:4px;align-items:center"><input type="text" class="hex-inp" id="hexOP" value="#1c2b45" oninput="hCol('OP')"><label class="tog-use"><input type="checkbox" id="useOP" checked onchange="gen()">use</label></div></div></div>
         <div class="color-row"><div class="sw-wrap"><input type="color" id="colOA" value="#c9a227" oninput="sCol('OA')"></div><div class="c-meta"><div class="c-lbl">Outfit Accent</div><div style="display:flex;gap:4px;align-items:center"><input type="text" class="hex-inp" id="hexOA" value="#c9a227" oninput="hCol('OA')"><label class="tog-use"><input type="checkbox" id="useOA" onchange="gen()">use</label></div></div></div>
         <div class="color-row"><div class="sw-wrap"><input type="color" id="colBG" value="#e4e2dc" oninput="sCol('BG')"></div><div class="c-meta"><div class="c-lbl">Background</div><div style="display:flex;gap:4px;align-items:center"><input type="text" class="hex-inp" id="hexBG" value="#e4e2dc" oninput="hCol('BG')"><label class="tog-use"><input type="checkbox" id="useBG" onchange="gen()">use</label></div></div></div>
       </div>
       <!-- Lighting -->
-      <div class="blk blk-sfx">
-        <div class="blk-hdr">Lighting <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
+      <div class="sg">
+        <div class="sg-title">💡 Lighting <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
         <div class="fld"><label class="fld-lbl">Setup</label><select id="lighting" onchange="hc(this,'lightingC')"><option value="">— —</option><option value="soft editorial softbox" selected>Soft editorial</option><option value="Rembrandt">Rembrandt</option><option value="split lighting">Split</option><option value="rim backlit">Rim backlit</option><option value="natural window">Natural window</option><option value="golden hour">Golden hour</option><option value="neon gel">Neon gel</option><option value="low key dramatic">Low key</option><option value="high key bright">High key</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="lightingC"><input type="text" oninput="gen()"></div></div>
         <div class="fld"><label class="fld-lbl">Shadow</label><select id="shadow"><option value="">— —</option><option value="low soft">Low soft</option><option value="medium balanced" selected>Medium</option><option value="high sculpted">High sculpted</option><option value="chiaroscuro">Chiaroscuro</option></select></div>
         <div class="fld"><label class="fld-lbl">WB</label><select id="wb"><option value="">— —</option><option value="neutral 5500K" selected>5500K</option><option value="warm 3200K">3200K warm</option><option value="cool 7000K">7000K cool</option><option value="golden sunset">Golden</option></select></div>
       </div>
       <!-- Camera -->
-      <div class="blk blk-sfx">
-        <div class="blk-hdr">Camera <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
+      <div class="sg">
+        <div class="sg-title">📷 Camera <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
         <div class="fld"><label class="fld-lbl">Lens</label><select id="lens"><option value="">— —</option><option value="24mm wide">24mm</option><option value="35mm environmental">35mm</option><option value="50mm natural">50mm</option><option value="85mm flattering" selected>85mm</option><option value="135mm telephoto">135mm</option></select></div>
         <div class="fld"><label class="fld-lbl">Aperture</label><select id="aperture"><option value="">— —</option><option value="f/1.4 bokeh">f/1.4</option><option value="f/2.0 shallow" selected>f/2.0</option><option value="f/4.0 balanced">f/4.0</option><option value="f/8.0 deep">f/8.0</option></select></div>
         <div class="fld"><label class="fld-lbl">Angle</label><select id="camAngle"><option value="">— —</option><option value="low angle">Low</option><option value="eye level" selected>Eye level</option><option value="slight high">Slight high</option><option value="dutch angle">Dutch</option><option value="overhead">Overhead</option></select></div>
@@ -603,8 +583,8 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
         <div class="fld"><label class="fld-lbl">Aspect Ratio</label><select id="aspectRatio" onchange="hc(this,'aspectRatioC')"><option value="">— skip —</option><option value="1:1 square">1:1</option><option value="4:5 portrait">4:5</option><option value="3:4">3:4</option><option value="9:16 vertical">9:16</option><option value="16:9 cinematic">16:9</option><option value="2:3">2:3</option><option value="3:2 landscape">3:2</option><option value="21:9 ultrawide">21:9</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="aspectRatioC"><input type="text" oninput="gen()"></div></div>
       </div>
       <!-- Post -->
-      <div class="blk blk-sfx">
-        <div class="blk-hdr">Post <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
+      <div class="sg">
+        <div class="sg-title">🎞️ Post <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
         <div class="fld"><label class="fld-lbl">Retouch</label><select id="retouch"><option value="">— —</option><option value="natural pore preserved" selected>Natural</option><option value="minimal documentary">Minimal</option><option value="beauty smooth">Beauty</option><option value="heavy fashion porcelain">Heavy fashion</option></select></div>
         <div class="fld"><label class="fld-lbl">Grade</label><select id="grade" onchange="hc(this,'gradeC')"><option value="">— —</option><option value="clean commercial" selected>Clean commercial</option><option value="filmic S-curve">Filmic</option><option value="desaturated muted">Desaturated</option><option value="high contrast punchy">High contrast</option><option value="vintage film">Vintage</option><option value="B&W">B&W</option><option value="matte fade">Matte fade</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="gradeC"><input type="text" oninput="gen()"></div></div>
         <div class="fld"><label class="fld-lbl">Resolution</label><select id="resolution"><option value="">— —</option><option value="sharp high detail" selected>Sharp</option><option value="8k ultra sharp">8K ultra</option><option value="hyper detailed">Hyper</option><option value="soft focus">Soft focus</option></select></div>
