@@ -314,6 +314,14 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
     
     <!-- TOP 70%: MAIN EDITOR AREA -->
     <div class="ide-center-top">
+      
+      <!-- Conflict Warnings -->
+      <div class="conflict-warn" id="conflictArea" style="margin:0 0 16px 0;display:none;">
+        <div class="conflict-box">
+          <div style="font-size:10px;font-weight:700;color:hsl(var(--warn));margin-bottom:6px">⚠️ Potential Prompt Conflicts — fix in RAW Edit or adjust variables</div>
+          <div id="conflictList"></div>
+        </div>
+      </div>
       <!-- Reverse Engineering -->
       <div class="bento-card collapse-section" style="border-color:hsl(var(--acc)/0.3);background:hsl(var(--card));margin-bottom:16px">
         <div class="collapse-hdr open" onclick="togCol(this)" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer">
@@ -869,9 +877,10 @@ function checkConflicts(){
   const cs=[];CRULES.forEach(r=>{const va=gv(r.a),vb=gv(r.b);if(va&&vb){const m=r.ck(va,vb);if(m)cs.push({a:r.a,b:r.b,msg:m})}});
   const area=document.getElementById('conflictArea'),list=document.getElementById('conflictList');
   document.querySelectorAll('.conflict-hl').forEach(el=>el.classList.remove('conflict-hl'));
+  if (!area) return;
   if(cs.length){
     area.style.display='block';
-    list.innerHTML=cs.map(c=>`<div class="conflict-item" onclick="scrollToConflict('${c.a}','${c.b}')" style="cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='hsl(var(--warn)/0.1)'" onmouseout="this.style.background='hsl(var(--warn)/0.05)'">⚠ <strong>${c.a}</strong> ↔ <strong>${c.b}</strong>: ${c.msg}</div>`).join('');
+    if(list) list.innerHTML=cs.map(c=>`<div class="conflict-item" onclick="scrollToConflict('${c.a}','${c.b}')" style="cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='hsl(var(--warn)/0.1)'" onmouseout="this.style.background='hsl(var(--warn)/0.05)'">⚠ <strong>${c.a}</strong> ↔ <strong>${c.b}</strong>: ${c.msg}</div>`).join('');
     cs.forEach(c=>{
       const ea=document.getElementById(c.a), eb=document.getElementById(c.b);
       if(ea) ea.classList.add('conflict-hl');
