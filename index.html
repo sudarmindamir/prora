@@ -164,7 +164,7 @@ textarea:hover,input[type="text"]:hover{border-color:hsl(var(--ring)/0.5)}
 textarea:focus,input[type="text"]:focus{border-color:hsl(var(--ring));box-shadow:0 0 0 2px hsl(var(--ring)/0.2)}
 textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
 .cust-inp{display:none;margin-top:6px}.cust-inp.show{display:block}
-.conflict-hl{border-color:hsl(var(--warn))!important;box-shadow:0 0 0 2px hsl(var(--warn)/0.3)!important;background:hsl(var(--warn)/0.05)!important;transition:all 0.3s}
+.conflict-hl{border-color:hsl(var(--err))!important;box-shadow:0 0 0 2px hsl(var(--err)/0.3)!important;background:hsl(var(--err)/0.05)!important;transition:all 0.3s}
 
 /* ===== TOGGLE GROUP ===== */
 .tog-grp{display:flex;gap:0;border-radius:var(--radius);overflow:hidden;border:1px solid hsl(var(--border));margin-bottom:8px;background:hsl(var(--muted))}
@@ -220,8 +220,9 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
 
 /* ===== BUTTONS ===== */
 .btn-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
-.btn-row button{flex:1;height:36px;padding:0 14px;border-radius:var(--radius);border:none;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;outline:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
-.btn-row button:active{transform:scale(0.98)}
+.btn-pri, .btn-sec, .btn-save {height:36px;padding:0 14px;border-radius:var(--radius);border:none;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;outline:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.btn-pri:active, .btn-sec:active, .btn-save:active {transform:scale(0.98)}
+.btn-row button{flex:1}
 .btn-pri{background:hsl(var(--foreground));color:hsl(var(--background))}.btn-pri:hover{opacity:.9}
 .btn-pri:focus-visible{box-shadow:0 0 0 2px hsl(var(--background)),0 0 0 4px hsl(var(--ring))}
 .btn-sec{background:hsl(var(--muted));color:hsl(var(--muted-foreground));border:1px solid hsl(var(--border))!important}.btn-sec:hover{background:hsl(var(--accent));color:hsl(var(--accent-foreground))}
@@ -254,9 +255,9 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 hsl(var(--acc)/0.3)}50%{box-shadow:0 0 0 6px hsl(var(--acc)/0)}}
 .analyzing{animation:pulse 1.2s ease-in-out infinite}
 .conflict-warn{margin:0 24px 16px;display:none}
-.conflict-box{background:hsl(var(--warn)/0.06);border:1px solid hsl(var(--warn)/0.2);border-radius:var(--radius);padding:12px 16px}
+.conflict-box{background:hsl(var(--err)/0.06);border:1px solid hsl(var(--err)/0.2);border-radius:var(--radius);padding:12px 16px}
 .conflict-item{margin-bottom:6px;font-size:12px;color:hsl(var(--muted-foreground));line-height:1.5}
-.conflict-item strong{color:hsl(var(--warn))}
+.conflict-item strong{color:hsl(var(--err))}
 
 /* ===== RESPONSIVE ===== */
 @media(max-width:900px){
@@ -298,7 +299,7 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
 
     <!-- Prefix Builder -->
     <div class="bento-card side-col">
-      <div class="col-hdr" style="margin-bottom:10px"><span>Prefix Builder</span><span class="badge badge-pfx">Prefix</span></div>
+      <div class="col-hdr" style="margin-bottom:10px;display:flex;align-items:center;gap:8px"><span>Prefix Builder</span><span class="badge badge-pfx">Prefix</span></div>
       <div class="sg">
         <div class="sg-title">📸 Photography Style</div>
         <div class="fld"><label class="fld-lbl">Genre</label><select id="pfxGenre" onchange="hc(this,'pfxGenreC')"><option value="">— skip —</option><option value="editorial portrait" selected>Editorial portrait</option><option value="corporate headshot">Corporate headshot</option><option value="environmental portrait">Environmental</option><option value="street documentary">Street documentary</option><option value="fashion editorial">Fashion editorial</option><option value="cyberpunk neon portrait">Cyberpunk neon</option><option value="high streetwear photography">High streetwear</option><option value="cinematic film still">Cinematic film</option><option value="film noir high contrast">Film noir</option><option value="beauty close-up">Beauty CU</option><option value="conceptual">Conceptual</option><option value="custom">✏️ Custom</option></select><div class="cust-inp" id="pfxGenreC"><input type="text" oninput="gen()"></div></div>
@@ -318,7 +319,7 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
       <!-- Conflict Warnings -->
       <div class="conflict-warn" id="conflictArea" style="margin:0 0 16px 0;display:none;">
         <div class="conflict-box">
-          <div style="font-size:10px;font-weight:700;color:hsl(var(--warn));margin-bottom:6px">⚠️ Potential Prompt Conflicts — fix in RAW Edit or adjust variables</div>
+          <div style="font-size:10px;font-weight:700;color:hsl(var(--err));margin-bottom:6px">⚠️ Potential Prompt Conflicts — fix in RAW Edit or adjust variables</div>
           <div id="conflictList"></div>
         </div>
       </div>
@@ -346,7 +347,7 @@ textarea::placeholder,input::placeholder{color:hsl(var(--muted-foreground)/0.6)}
           <div style="background:hsl(var(--prompt-bg));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:12px;margin-bottom:10px">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
               <span style="font-size:11px;font-weight:600;color:hsl(var(--acc));text-transform:uppercase">📋 RE Prompt</span>
-              <button class="btn-pri" style="flex:none;padding:4px 10px;font-size:10px" onclick="copyRE()">Copy</button>
+              <button class="btn-pri" style="flex:none" onclick="copyRE()">Copy</button>
             </div>
             <div class="re-prompt-text" id="rePromptText">Analyze this image as a professional photography director. Extract ONLY the photographic and cinematographic qualities. 
 
@@ -415,8 +416,8 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
           </div>
           <div><label class="fld-lbl" style="margin-bottom:4px;display:block">📥 Paste AI Result</label><textarea id="rePaste" style="min-height:70px;font-family:'JetBrains Mono',monospace;font-size:10px" placeholder="Paste ChatGPT/Gemini response here..."></textarea></div>
           <div style="display:flex;gap:6px;margin-top:8px">
-            <button class="btn-pri" style="flex:none;padding:6px 14px" onclick="analyzeRE()" id="reBtn">🔍 Analyze & Auto-Fill</button>
-            <button class="btn-sec" style="flex:none;padding:6px 10px" onclick="document.getElementById('rePaste').value='';document.getElementById('reResult').style.display='none'">Clear</button>
+            <button class="btn-pri" style="flex:none" onclick="analyzeRE()" id="reBtn">🔍 Analyze & Auto-Fill</button>
+            <button class="btn-sec" style="flex:none" onclick="document.getElementById('rePaste').value='';document.getElementById('reResult').style.display='none'">Clear</button>
           </div>
           <div id="reResult" style="margin-top:8px;display:none"></div>
         </div>
@@ -508,8 +509,8 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
             </div>
           </div>
           <div style="display:flex;gap:8px;margin-top:12px">
-            <button class="btn-pri" onclick="vpAccept()" style="flex:none;padding:7px 16px">✅ Accept & Apply</button>
-            <button class="btn-sec" onclick="setPose('tpose')" style="flex:none;padding:7px 12px">Reset</button>
+            <button class="btn-pri" onclick="vpAccept()" style="flex:none">✅ Accept & Apply</button>
+            <button class="btn-sec" onclick="setPose('tpose')" style="flex:none">Reset</button>
           </div>
           <div id="vpInfo" style="display:none;margin-top:10px;font-size:11px;color:hsl(var(--ok));background:hsl(var(--muted));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:8px 12px"></div>
         </div>
@@ -539,7 +540,7 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
             <button class="out-tab" data-t="gemini" onclick="swTab('gemini')">Gemini</button>
             <button class="out-tab" data-t="magnific" onclick="swTab('magnific')">Magnific</button>
           </div>
-          <button class="btn-sec" onclick="gen()" style="margin-top:auto">Regenerate</button>
+          <!-- Regenerate button removed -->
         </div>
         <div class="dock-content">
           <div class="out-pane active" data-t="raw">
@@ -579,7 +580,7 @@ Format EXACTLY as shown. Do not skip variables. IGNORE ALL TEXT AND GRAPHIC ELEM
   <!-- RIGHT COLUMN (IDE Agent Chat Panel Metaphor) -->
   <div class="ide-col ide-col-right">
     <div class="bento-card side-col">
-      <div class="col-hdr" style="margin-bottom:10px"><span>Light, Camera & Post</span><span class="badge badge-sfx">Suffix</span></div>
+      <div class="col-hdr" style="margin-bottom:10px;display:flex;align-items:center;gap:8px"><span>Light, Camera & Post</span><span class="badge badge-sfx">Suffix</span></div>
       <!-- Colors -->
       <div class="sg">
         <div class="sg-title">🎨 Colors <button class="lock-btn" onclick="togLk(this)">🔓</button></div>
@@ -891,7 +892,7 @@ function checkConflicts(){
   if (!area) return;
   if(cs.length){
     area.style.display='block';
-    if(list) list.innerHTML=cs.map(c=>`<div class="conflict-item" onclick="scrollToConflict('${c.a}','${c.b}')" style="cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='hsl(var(--warn)/0.1)'" onmouseout="this.style.background='hsl(var(--warn)/0.05)'">⚠ <strong>${c.a}</strong> ↔ <strong>${c.b}</strong>: ${c.msg}</div>`).join('');
+    if(list) list.innerHTML=cs.map(c=>`<div class="conflict-item" onclick="scrollToConflict('${c.a}','${c.b}')" style="cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='hsl(var(--err)/0.1)'" onmouseout="this.style.background='hsl(var(--err)/0.05)'">⚠ <strong>${c.a}</strong> ↔ <strong>${c.b}</strong>: ${c.msg}</div>`).join('');
     cs.forEach(c=>{
       const ea=document.getElementById(c.a), eb=document.getElementById(c.b);
       if(ea) ea.classList.add('conflict-hl');
